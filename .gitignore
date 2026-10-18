@@ -1,0 +1,12 @@
+target/
+dependency-reduced-pom.xml
+*.class
+*.log
+
+# Herramienta privada de licencias (contiene el secreto con el que se generan las claves)
+herramienta-licencias/
+# Configuración local de herramientas
+.claude/
+instalador/
+*.exe
+*.msi

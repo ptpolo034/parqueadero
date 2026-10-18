@@ -1,0 +1,31 @@
+package com.parqueadero.servicio;
+
+import com.parqueadero.dao.AuditoriaDAO;
+import com.parqueadero.modelo.RegistroAuditoria;
+
+import java.time.LocalDate;
+import java.util.List;
+
+/**
+ * Bitácora de acciones sensibles (cancelaciones, ediciones, cambios de tarifas y usuarios...).
+ * Nunca debe impedir la operación principal: si guardar el registro falla, se ignora el error.
+ */
+public class AuditoriaService {
+    private final AuditoriaDAO auditoriaDAO = new AuditoriaDAO();
+
+    public void registrar(String usuario, String autorizadoPor, String accion, String detalle) {
+        try {
+            auditoriaDAO.registrar(usuario, autorizadoPor, accion, detalle);
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void registrar(String usuario, String accion, String detalle) {
+        registrar(usuario, null, accion, detalle);
+    }
+
+    public List<RegistroAuditoria> listar(LocalDate desde, String texto, int limite) {
+        return auditoriaDAO.listar(desde, texto, limite);
+    }
+}
