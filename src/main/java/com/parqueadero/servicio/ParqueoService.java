@@ -43,7 +43,7 @@ public class ParqueoService {
         return vehiculoDAO.insertar(vehiculo);
     }
 
-    /** Cobro calculado para un vehículo activo, con la hora de salida ya "congelada" para el cobro y el recibo. */
+    /** Aquí guardo el cobro calculado de un vehículo activo, con la hora de salida ya "congelada" para el cobro y el recibo. */
     public record PrevisualizacionSalida(Vehiculo vehiculo, LocalDateTime horaSalida, int total) {
     }
 
@@ -108,8 +108,8 @@ public class ParqueoService {
     }
 
     /**
-     * Corrige la placa o el tipo de una entrada activa (p. ej. un error de digitación).
-     * Queda en la auditoría con el valor anterior, el nuevo y quién lo autorizó.
+     * Corrijo la placa o el tipo de una entrada activa (p. ej. un error de digitación).
+     * En la auditoría dejo el valor anterior, el nuevo y quién lo autorizó.
      */
     public void editarEntrada(int vehiculoId, String nuevaPlaca, TipoVehiculo nuevoTipo, String autorizadoPor) {
         if (nuevaPlaca == null || nuevaPlaca.isBlank()) {
@@ -130,7 +130,7 @@ public class ParqueoService {
     }
 
     /**
-     * Anula una entrada activa que nunca llegó a cobrarse. El registro NO se borra: queda marcado como
+     * Anulo una entrada activa que nunca llegó a cobrarse. El registro NO lo borro: lo dejo marcado como
      * cancelado y en la auditoría con el motivo, para que siempre se pueda saber qué pasó.
      */
     public void cancelarEntrada(int vehiculoId, String motivo, String autorizadoPor) {
@@ -149,7 +149,7 @@ public class ParqueoService {
         vehiculoDAO.cancelar(vehiculoId, usuarioActual, autorizadoPor, detalle);
     }
 
-    /** Tipos de vehículo definidos en Tarifas, en el orden en que se crearon. */
+    /** Devuelvo los tipos de vehículo definidos en Tarifas, en el orden en que los creé. */
     public List<TipoVehiculo> obtenerTiposVehiculo() {
         return tarifaDAO.obtenerTarifas().keySet().stream().map(TipoVehiculo::de).toList();
     }

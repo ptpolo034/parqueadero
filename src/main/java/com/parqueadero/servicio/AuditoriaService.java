@@ -7,8 +7,8 @@ import java.time.LocalDate;
 import java.util.List;
 
 /**
- * Bitácora de acciones sensibles (cancelaciones, ediciones, cambios de tarifas y usuarios...).
- * Nunca debe impedir la operación principal: si guardar el registro falla, se ignora el error.
+ * Aquí llevo la bitácora de las acciones sensibles (cancelaciones, ediciones, cambios de tarifas y usuarios...).
+ * No quiero que impida la operación principal: si falla al guardar el registro, ignoro el error.
  */
 public class AuditoriaService {
     private final AuditoriaDAO auditoriaDAO = new AuditoriaDAO();

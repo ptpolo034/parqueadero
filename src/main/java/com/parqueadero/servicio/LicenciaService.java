@@ -1,7 +1,7 @@
 package com.parqueadero.servicio;
 
 import com.parqueadero.dao.LicenciaDAO;
-import com.parqueadero.util.GeneradorClaves;
+import com.parqueadero.util.ValidadorLicencia;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -11,9 +11,20 @@ public class LicenciaService {
     public static final int DIAS_PRUEBA = 30;
 
     private final LicenciaDAO licenciaDAO = new LicenciaDAO();
+    private final ValidadorLicencia validador;
+
+    /** Uso mi clave pública de producción para validar las claves de activación. */
+    public LicenciaService() {
+        this(ValidadorLicencia.porDefecto());
+    }
+
+    /** Me permite probar el servicio con otra clave pública (por ejemplo, un par efímero en las pruebas). */
+    public LicenciaService(ValidadorLicencia validador) {
+        this.validador = validador;
+    }
 
     /**
-     * Se llama una vez al arrancar la aplicación: avanza la "última fecha vista" hasta
+     * Lo llamo una vez al arrancar la aplicación: avanzo la "última fecha vista" hasta
      * hoy (nunca hacia atrás), para que retrasar el reloj del sistema no reinicie la
      * cuenta de días de prueba.
      */
@@ -34,7 +45,8 @@ public class LicenciaService {
         if (registro.claveActivacion() == null || registro.claveActivacion().isBlank()) {
             return false;
         }
-        return registro.claveActivacion().equals(GeneradorClaves.calcularClave(registro.idInstalacion()));
+        // Compruebo la firma guardada contra mi clave pública; ya no hay ningún secreto con qué comparar
+        return validador.esValida(registro.idInstalacion(), registro.claveActivacion());
     }
 
     public int diasRestantesPrueba() {
@@ -51,9 +63,9 @@ public class LicenciaService {
         if (claveIngresada == null || claveIngresada.isBlank()) {
             throw new IllegalArgumentException("Ingresa una clave de activación");
         }
-        String normalizada = claveIngresada.trim().toUpperCase().replace(" ", "");
-        String esperada = GeneradorClaves.calcularClave(idInstalacion());
-        if (!normalizada.equals(esperada)) {
+        // Acepto la clave con espacios, saltos de línea, guiones o minúsculas, como suele llegar al pegarla
+        String normalizada = ValidadorLicencia.normalizarClave(claveIngresada);
+        if (normalizada == null || !validador.esValida(idInstalacion(), normalizada)) {
             throw new IllegalArgumentException("La clave de activación no es válida para este equipo");
         }
         licenciaDAO.guardarClaveActivacion(normalizada);

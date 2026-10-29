@@ -12,7 +12,7 @@ import java.awt.image.BufferedImage;
 import java.util.Map;
 
 /**
- * Genera imágenes de código QR que codifican la placa de un vehículo, para imprimirlas
+ * Aquí genero las imágenes de código QR con la placa de un vehículo, para imprimirlas
  * en los tickets de entrada/lavado y poder escanearlas después con un lector de
  * código de barras/QR (que funciona como si "escribiera" el texto y presionara Enter).
  */

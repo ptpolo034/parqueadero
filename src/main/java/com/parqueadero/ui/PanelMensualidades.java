@@ -40,7 +40,9 @@ public class PanelMensualidades extends JPanel {
                 return false;
             }
         };
-        tabla = Tablas.crear(modelo);
+        tabla = Tablas.crear(modelo, "Todavía no hay clientes con parqueo mensual");
+        Tablas.alinearDerecha(tabla, "Monto/mes");
+        tabla.getColumnModel().getColumn(6).setCellRenderer(new RenderEstado());
         JScrollPane scroll = new JScrollPane(tabla);
         scroll.setBorder(BorderFactory.createEmptyBorder());
 
@@ -83,7 +85,7 @@ public class PanelMensualidades extends JPanel {
             modelo.addRow(new Object[]{
                     m.getPlaca(), m.getNombreCliente() != null ? m.getNombreCliente() : "",
                     m.getTelefono() != null ? m.getTelefono() : "", m.getTipoVehiculo(),
-                    "$" + m.getMontoMensual(), m.getFechaVencimiento().format(fmt), estado
+                    Formato.dinero(m.getMontoMensual()), m.getFechaVencimiento().format(fmt), estado
             });
         }
     }
@@ -152,6 +154,21 @@ public class PanelMensualidades extends JPanel {
             onCambio.run();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    /** Pinto el estado con color: verde si está vigente, rojo si venció y gris si fue cancelada. */
+    private static class RenderEstado extends javax.swing.table.DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable t, Object valor, boolean seleccionada,
+                                                       boolean foco, int fila, int columna) {
+            Component c = super.getTableCellRendererComponent(t, valor, seleccionada, foco, fila, columna);
+            if (!seleccionada) {
+                String texto = String.valueOf(valor);
+                setForeground(texto.startsWith("Vencida") ? Tema.rojo()
+                        : texto.startsWith("Activa") ? Tema.verde() : Tema.textoSecundario());
+            }
+            return c;
         }
     }
 }

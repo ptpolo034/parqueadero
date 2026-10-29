@@ -8,7 +8,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 
-/** Formulario de una columna: cada campo lleva su etiqueta encima, con espacios uniformes. */
+/** Mi formulario de una columna: cada campo lleva su etiqueta encima, con espacios uniformes. */
 public class Formulario extends JPanel {
     private final GridBagConstraints gbc = new GridBagConstraints();
     private boolean primero = true;
@@ -22,7 +22,7 @@ public class Formulario extends JPanel {
         gbc.anchor = GridBagConstraints.NORTHWEST;
     }
 
-    /** Agrega un campo con su etiqueta; devuelve la etiqueta (por si se necesita habilitarla o ocultarla). */
+    /** Agrego un campo con su etiqueta y devuelvo la etiqueta (por si necesito habilitarla o ocultarla después). */
     public JLabel campo(String etiqueta, JComponent campo) {
         JLabel l = new JLabel(etiqueta);
         l.setForeground(Tema.textoSecundario());
@@ -34,7 +34,7 @@ public class Formulario extends JPanel {
         return l;
     }
 
-    /** Agrega un componente sin etiqueta (botones, casillas, textos). */
+    /** Agrego un componente sin etiqueta (botones, casillas, textos). */
     public void agregar(Component c) {
         gbc.insets = new Insets(primero ? 0 : 14, 0, 0, 0);
         add(c, gbc);

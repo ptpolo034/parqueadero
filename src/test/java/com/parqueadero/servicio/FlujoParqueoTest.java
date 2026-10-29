@@ -1,5 +1,6 @@
 package com.parqueadero.servicio;
 
+import com.parqueadero.BaseTemporalPruebas;
 import com.parqueadero.dao.ConexionBD;
 import com.parqueadero.modelo.EstadoVehiculo;
 import com.parqueadero.modelo.Mensualidad;
@@ -9,8 +10,6 @@ import com.parqueadero.modelo.Vehiculo;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.Statement;
 import java.time.LocalDate;
@@ -22,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/** Prueba el flujo completo contra una base de datos temporal (nunca toca la base real del usuario). */
+/** Pruebo el flujo completo contra una base de datos temporal (nunca toco la base real del usuario). */
 class FlujoParqueoTest {
     private static MensualidadService mensualidades;
     private static ParqueoService parqueo;
@@ -31,9 +30,8 @@ class FlujoParqueoTest {
 
     @BeforeAll
     static void prepararBaseTemporal() throws Exception {
-        Path casa = Files.createTempDirectory("parqueadero-test");
-        System.setProperty("user.home", casa.toString());
-        ConexionBD.inicializar();
+        // Comparto la carpeta temporal con las demás pruebas de base de datos (ConexionBD lee user.home una sola vez).
+        BaseTemporalPruebas.preparar();
         mensualidades = new MensualidadService("cajero1");
         parqueo = new ParqueoService("cajero1", new ConfiguracionService(), mensualidades);
         lavado = new LavadoService("cajero1");
@@ -43,7 +41,7 @@ class FlujoParqueoTest {
     void entradaYSalidaCobranYSumanEnReportes() throws Exception {
         Vehiculo v = parqueo.registrarEntrada("tst111", TipoVehiculo.CARRO);
         assertEquals("TST111", v.getPlaca());
-        // Entró hace 2 horas y 10 minutos: 3 horas a 3000
+        // Lo dejo como si hubiera entrado hace 2 horas y 10 minutos: se cobran 3 horas a 3000.
         try (Connection con = ConexionBD.obtenerConexion(); Statement st = con.createStatement()) {
             st.executeUpdate("UPDATE vehiculos SET hora_entrada = strftime('%Y-%m-%dT%H:%M:%S','now','-130 minutes','localtime') WHERE id = " + v.getId());
         }
@@ -65,7 +63,7 @@ class FlujoParqueoTest {
         parqueo.cancelarEntrada(v.getId(), "Digitación equivocada", "admin");
 
         assertNull(parqueo.obtenerActivoPorPlaca("CAN222"));
-        // Ya no ocupa cupo y se puede volver a registrar la placa
+        // Ya no ocupa cupo y puedo volver a registrar la placa.
         assertNotNull(parqueo.registrarEntrada("CAN222", TipoVehiculo.MOTO));
 
         List<RegistroAuditoria> registros = AUDITORIA.listar(null, "CAN222", 10);
@@ -110,7 +108,7 @@ class FlujoParqueoTest {
 
         Vehiculo v = parqueo.registrarEntrada("CAM555", TipoVehiculo.de("Camioneta"));
         assertEquals(TipoVehiculo.de("CAMIONETA"), parqueo.obtenerActivoPorPlaca("CAM555").getTipo());
-        // No se puede eliminar un tipo con vehículos adentro
+        // No dejo eliminar un tipo que tiene vehículos adentro.
         assertThrows(IllegalStateException.class, () -> parqueo.eliminarTipoVehiculo("CAMIONETA"));
         parqueo.cancelarEntrada(v.getId(), "prueba", "admin");
         parqueo.eliminarTipoVehiculo("CAMIONETA");

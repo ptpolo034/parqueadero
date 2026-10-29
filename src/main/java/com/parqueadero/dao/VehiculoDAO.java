@@ -42,7 +42,7 @@ public class VehiculoDAO {
         }
     }
 
-    /** Corrige placa/tipo y deja constancia en la auditoría dentro de la misma transacción. */
+    /** Corrijo la placa y el tipo, y dejo constancia en la auditoría dentro de la misma transacción. */
     public void actualizarPlacaTipo(int id, String placa, TipoVehiculo tipo, String usuario, String autorizadoPor,
                                     String detalleAuditoria) {
         String sql = "UPDATE vehiculos SET placa = ?, tipo = ? WHERE id = ?";
@@ -64,7 +64,7 @@ public class VehiculoDAO {
         }
     }
 
-    /** Anula la entrada (queda guardada como CANCELADO, no se borra) y la registra en la auditoría. */
+    /** Anulo la entrada (la dejo como CANCELADO, no la borro) y la registro en la auditoría. */
     public void cancelar(int id, String usuario, String autorizadoPor, String detalleAuditoria) {
         String sql = "UPDATE vehiculos SET estado = 'CANCELADO' WHERE id = ? AND estado = 'ACTIVO'";
         try (Connection con = ConexionBD.obtenerConexion()) {
@@ -131,7 +131,7 @@ public class VehiculoDAO {
     }
 
     /**
-     * Historial de salidas más recientes primero. Todos los filtros son opcionales; siempre hay un límite
+     * Devuelvo el historial de salidas, las más recientes primero. Todos los filtros son opcionales; siempre pongo un límite
      * para que la pantalla no se vuelva lenta cuando la base de datos acumule años de movimiento.
      */
     public List<Vehiculo> obtenerHistorial(String placaContiene, LocalDate desde, int limite) {
@@ -155,7 +155,7 @@ public class VehiculoDAO {
                 + "ORDER BY hora_salida", List.of(desde.toString(), hasta.toString()));
     }
 
-    /** Total cobrado por parqueo en las salidas del rango (calculado en la base de datos, sin cargar filas). */
+    /** Devuelvo el total cobrado por parqueo en las salidas del rango; lo sumo en la base de datos, sin cargar filas. */
     public int totalEnRango(LocalDate desde, LocalDate hasta) {
         String sql = "SELECT COALESCE(SUM(total_parqueo), 0) AS t FROM vehiculos "
                 + "WHERE estado = 'FINALIZADO' AND substr(hora_salida, 1, 10) BETWEEN ? AND ?";

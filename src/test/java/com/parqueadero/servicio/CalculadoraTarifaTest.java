@@ -36,9 +36,9 @@ class CalculadoraTarifaTest {
 
     @Test
     void topePorDiaLimitaElCobro() {
-        // 10 horas a 3000 serían 30000, pero el tope diario es 18000
+        // 10 horas a 3000 serían 30000, pero el tope diario es 18000.
         assertEquals(18000, CalculadoraTarifa.calcular(10 * 60, 3000, 18000, 0, 60));
-        // 5 horas = 15000, por debajo del tope
+        // 5 horas son 15000, que está por debajo del tope.
         assertEquals(15000, CalculadoraTarifa.calcular(5 * 60, 3000, 18000, 0, 60));
     }
 
@@ -46,9 +46,9 @@ class CalculadoraTarifaTest {
     void cadaDiaCompletoCobraElTope() {
         assertEquals(18000, CalculadoraTarifa.calcular(24 * 60, 3000, 18000, 0, 60));
         assertEquals(36000, CalculadoraTarifa.calcular(48 * 60, 3000, 18000, 0, 60));
-        // 2 días + 1 hora
+        // 2 días + 1 hora.
         assertEquals(36000 + 3000, CalculadoraTarifa.calcular(49 * 60, 3000, 18000, 0, 60));
-        // fin de semana (72 h) con tope 18000 = 54000, no 216000
+        // Un fin de semana (72 h) con tope de 18000 cobra 54000, no 216000.
         assertEquals(54000, CalculadoraTarifa.calcular(72 * 60, 3000, 18000, 0, 60));
     }
 

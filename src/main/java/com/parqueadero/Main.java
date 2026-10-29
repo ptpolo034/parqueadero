@@ -21,8 +21,8 @@ public class Main {
         try {
             new RespaldoService().respaldarSiNoExisteHoy();
         } catch (Exception e) {
-            // No se detiene el arranque de la aplicación si el respaldo automático falla
-            // (por ejemplo, por falta de permisos de escritura); solo se avisa al usuario.
+            // Si el respaldo automático falla no detengo el arranque de la aplicación
+            // (por ejemplo, por falta de permisos de escritura); solo le aviso al usuario.
             SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(null,
                     "No se pudo generar el respaldo automático de la base de datos: " + e.getMessage(),
                     "Aviso", JOptionPane.WARNING_MESSAGE));
@@ -34,7 +34,7 @@ public class Main {
         try {
             Tema.instalar();
         } catch (Exception e) {
-            // Si algo falla, seguimos con la apariencia por defecto de Swing en vez de bloquear el arranque.
+            // Si algo falla, sigo con la apariencia por defecto de Swing en vez de bloquear el arranque.
             e.printStackTrace();
         }
     }
@@ -45,7 +45,7 @@ public class Main {
 
         if (licenciaService.estaBloqueado()) {
             new DialogoActivacion(null, licenciaService, true).setVisible(true);
-            // Si llega aquí es porque se activó correctamente (si no, "Salir" ya cerró la app).
+            // Si llega aquí es porque el cliente activó la licencia bien (si no, "Salir" ya cerró la app).
         }
 
         AuthService authService = new AuthService();

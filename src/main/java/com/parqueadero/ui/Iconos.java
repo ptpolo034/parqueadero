@@ -4,12 +4,12 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 
 import java.awt.Color;
 
-/** Íconos vectoriales (SVG) de la interfaz. Nunca se ven pixelados y se adaptan al tema claro/oscuro. */
+/** Aquí reúno los íconos vectoriales (SVG) de la interfaz: nunca se ven pixelados y se adaptan al tema claro/oscuro. */
 public final class Iconos {
     private Iconos() {
     }
 
-    /** Ícono gris neutro que cambia de tono automáticamente entre tema claro y oscuro. */
+    /** Devuelvo un ícono gris neutro que cambia de tono solo entre el tema claro y el oscuro. */
     public static FlatSVGIcon neutro(String nombre, int tamano) {
         FlatSVGIcon icono = new FlatSVGIcon("icons/" + nombre + ".svg", tamano, tamano);
         icono.setColorFilter(new FlatSVGIcon.ColorFilter()
@@ -17,7 +17,7 @@ public final class Iconos {
         return icono;
     }
 
-    /** Ícono de un color fijo (por ejemplo, blanco sobre un botón de color). */
+    /** Devuelvo un ícono de un color fijo (por ejemplo, blanco sobre un botón de color). */
     public static FlatSVGIcon color(String nombre, int tamano, Color color) {
         FlatSVGIcon icono = new FlatSVGIcon("icons/" + nombre + ".svg", tamano, tamano);
         icono.setColorFilter(new FlatSVGIcon.ColorFilter().add(Color.BLACK, color, color));

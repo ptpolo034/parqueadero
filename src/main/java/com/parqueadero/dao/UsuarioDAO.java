@@ -106,6 +106,25 @@ public class UsuarioDAO {
         }
     }
 
+    /**
+     * Cambio el hash viejo de un usuario por el nuevo, pero solo si en la base sigue estando el
+     * hash viejo que yo leí. Así, si mientras tanto alguien restableció la contraseña, no la pisó.
+     * El hash nuevo lleva su propia sal, por eso dejo la columna {@code salt} vacía.
+     *
+     * @return {@code true} si alcancé a actualizar el usuario
+     */
+    public boolean migrarHash(int id, String hashAnterior, String hashNuevo) {
+        String sql = "UPDATE usuarios SET hash_contrasena = ?, salt = '' WHERE id = ? AND hash_contrasena = ?";
+        try (Connection con = ConexionBD.obtenerConexion(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, hashNuevo);
+            ps.setInt(2, id);
+            ps.setString(3, hashAnterior);
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error al actualizar el formato de la contraseña", e);
+        }
+    }
+
     public void eliminar(int id) {
         String sql = "DELETE FROM usuarios WHERE id = ?";
         try (Connection con = ConexionBD.obtenerConexion(); PreparedStatement ps = con.prepareStatement(sql)) {

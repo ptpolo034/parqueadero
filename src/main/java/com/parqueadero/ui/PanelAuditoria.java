@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-/** Bitácora (solo administrador): quién canceló, editó o cambió qué, cuándo y con qué autorización. */
+/** Mi bitácora (solo para el administrador): muestro quién canceló, editó o cambió qué, cuándo y con qué autorización. */
 public class PanelAuditoria extends JPanel {
     private static final int LIMITE = 500;
     private static final String[] PERIODOS = {"Hoy", "Últimos 7 días", "Últimos 30 días", "Últimos 90 días", "Todo"};
@@ -53,7 +53,7 @@ public class PanelAuditoria extends JPanel {
                 return false;
             }
         };
-        JTable tabla = Tablas.crear(modelo);
+        JTable tabla = Tablas.crear(modelo, "No hay movimientos con ese filtro");
         tabla.getColumnModel().getColumn(0).setPreferredWidth(140);
         tabla.getColumnModel().getColumn(1).setPreferredWidth(90);
         tabla.getColumnModel().getColumn(2).setPreferredWidth(90);
@@ -76,11 +76,10 @@ public class PanelAuditoria extends JPanel {
     }
 
     public void refrescar() {
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         List<RegistroAuditoria> registros = auditoriaService.listar(fechaDesde(), campoBusqueda.getText(), LIMITE);
         modelo.setRowCount(0);
         for (RegistroAuditoria r : registros) {
-            modelo.addRow(new Object[]{r.fechaHora().format(fmt), nz(r.usuario()), nz(r.autorizadoPor()),
+            modelo.addRow(new Object[]{Formato.fechaHoraConSegundos(r.fechaHora()), nz(r.usuario()), nz(r.autorizadoPor()),
                     r.accion().replace('_', ' '), nz(r.detalle())});
         }
         labelResumen.setText(registros.size() + " registros" + (registros.size() >= LIMITE ? " (límite alcanzado)" : ""));

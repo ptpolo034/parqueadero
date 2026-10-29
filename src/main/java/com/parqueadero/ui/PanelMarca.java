@@ -20,7 +20,7 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.geom.Ellipse2D;
 
-/** Panel lateral con degradado y el logo, para las pantallas de inicio de sesión y activación. */
+/** Aquí armo el panel lateral con degradado y el logo, para las pantallas de inicio de sesión y activación. */
 public class PanelMarca extends JPanel {
 
     public PanelMarca(String titulo, String subtitulo) {
@@ -69,7 +69,7 @@ public class PanelMarca extends JPanel {
         int h = getHeight();
         g2.setPaint(new GradientPaint(0, 0, new Color(0x1D4ED8), w, h, new Color(0x0F172A)));
         g2.fillRect(0, 0, w, h);
-        // Círculos decorativos muy sutiles
+        // Pinto unos círculos decorativos muy sutiles
         g2.setColor(new Color(255, 255, 255, 18));
         g2.fill(new Ellipse2D.Float(w * 0.45f, -h * 0.12f, w * 0.9f, w * 0.9f));
         g2.setColor(new Color(255, 255, 255, 12));

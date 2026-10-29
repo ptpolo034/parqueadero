@@ -1,6 +1,7 @@
 package com.parqueadero.ui;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.util.UIScale;
 import com.parqueadero.util.FiltroMayusculas;
 import com.parqueadero.modelo.EstadoMensualidad;
 import com.parqueadero.modelo.Mensualidad;
@@ -37,8 +38,10 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Pantalla de inicio: un vistazo al estado del negocio en este momento. */
+/** Mi pantalla de inicio: un vistazo al estado del negocio en este momento. */
 public class PanelInicio extends JPanel {
+    /** Alto mínimo (sin escalar) de cada fila de tarjetas de abajo: tiene que caber el título, el encabezado y dos filas de tabla. */
+    private static final int ALTO_MINIMO_FILA = 188;
     private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter DIA_CORTO = DateTimeFormatter.ofPattern("EEE d", new java.util.Locale("es", "CO"));
 
@@ -75,7 +78,7 @@ public class PanelInicio extends JPanel {
         setLayout(new BorderLayout());
         setOpaque(false);
 
-        // Cuadro de placa: pequeño y centrado; el sistema detecta solo si el vehículo entra o sale
+        // Cuadro de placa: lo dejo pequeño y centrado; el sistema detecta solo si el vehículo entra o sale
         FiltroMayusculas.aplicar(campoPlaca);
         campoPlaca.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "PLACA");
         campoPlaca.putClientProperty(FlatClientProperties.STYLE,
@@ -124,7 +127,9 @@ public class PanelInicio extends JPanel {
         fila2.add(tarjetaConTitulo("En el parqueadero ahora", "Vehículos con entrada registrada", tablaVehiculos));
         fila2.add(tarjetaConTitulo("Lavados en curso", "Pendientes de cobrar", tablaLavados));
 
+        // Fijo el alto mínimo de las dos filas de tarjetas: a 1120x700 la pantalla se desplaza en vez de dejar una sola fila por tabla.
         JPanel filas = new JPanel(new GridLayout(2, 1, 0, 16));
+        filas.setPreferredSize(new Dimension(0, UIScale.scale(2 * ALTO_MINIMO_FILA + 16)));
         filas.setOpaque(false);
         filas.add(fila1);
         filas.add(fila2);
@@ -137,7 +142,7 @@ public class PanelInicio extends JPanel {
         return Tarjeta.conTitulo(titulo, subtitulo, cuerpo);
     }
 
-    /** Deja el cursor en el cuadro de placa, listo para escribir o escanear. */
+    /** Dejo el cursor en el cuadro de placa, listo para escribir o escanear. */
     public void enfocar() {
         SwingUtilities.invokeLater(campoPlaca::requestFocusInWindow);
     }
@@ -163,7 +168,7 @@ public class PanelInicio extends JPanel {
                 ocupacion >= 0.9 ? Estilos.Tono.ROJO : ocupacion >= 0.7 ? Estilos.Tono.AMBAR : Estilos.Tono.VERDE);
 
         int ingresosHoy = reporteService.ingresosTotalesEnRango(hoy, hoy);
-        kpiIngresos.actualizar("$" + String.format("%,d", ingresosHoy).replace(',', '.'),
+        kpiIngresos.actualizar(Formato.dinero(ingresosHoy),
                 "Todos los servicios");
 
         List<Vehiculo> activos = parqueoService.obtenerActivos();
@@ -173,7 +178,7 @@ public class PanelInicio extends JPanel {
         List<RegistroLavado> lavados = lavadoService.obtenerPendientes();
         kpiLavados.actualizar(String.valueOf(lavados.size()), lavados.isEmpty() ? "Todo al día" : "Pendientes de cobrar");
 
-        // Gráfico de 7 días
+        // Armo el gráfico de los últimos 7 días
         List<String> etiquetas = new ArrayList<>();
         List<Integer> valores = new ArrayList<>();
         for (int i = 6; i >= 0; i--) {
@@ -183,7 +188,7 @@ public class PanelInicio extends JPanel {
         }
         grafico.establecerDatos(etiquetas, valores);
 
-        // Vehículos en el parqueadero
+        // Lleno la tabla de vehículos en el parqueadero
         List<Object[]> filasVehiculos = new ArrayList<>();
         for (Vehiculo v : activos) {
             filasVehiculos.add(new Object[]{v.getPlaca(), v.getTipo(), v.getHoraEntrada().format(HORA),
@@ -191,7 +196,7 @@ public class PanelInicio extends JPanel {
         }
         tablaVehiculos.establecerFilas(filasVehiculos);
 
-        // Mensualidades por vencer
+        // Lleno la tabla de mensualidades por vencer (vencidas o que vencen en los próximos 7 días)
         List<Object[]> filasMensualidades = new ArrayList<>();
         for (Mensualidad m : mensualidadService.obtenerTodas()) {
             if (m.getEstado() != EstadoMensualidad.ACTIVA) {
@@ -208,7 +213,7 @@ public class PanelInicio extends JPanel {
         tablaMensualidades.establecerFilas(filasMensualidades);
         tablaMensualidades.colorearUltimaColumna();
 
-        // Lavados en curso
+        // Lleno la tabla de lavados en curso
         List<Object[]> filasLavados = new ArrayList<>();
         for (RegistroLavado r : lavados) {
             filasLavados.add(new Object[]{r.getPlaca(), r.getServicio().getNombre(), r.getFechaInicio().format(HORA)});
@@ -228,7 +233,7 @@ public class PanelInicio extends JPanel {
         return s.isEmpty() ? s : Character.toUpperCase(s.charAt(0)) + s.substring(1);
     }
 
-    /** Tabla de solo lectura dentro de una tarjeta, con un mensaje amable cuando no hay datos. */
+    /** Aquí armo una tabla de solo lectura dentro de una tarjeta, con un mensaje amable cuando no hay datos. */
     private static class TablaTarjeta extends JPanel {
         private final DefaultTableModel modelo;
         private final JTable tabla;

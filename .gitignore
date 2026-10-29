@@ -3,10 +3,8 @@ dependency-reduced-pom.xml
 *.class
 *.log
 
-# Herramienta privada de licencias (contiene el secreto con el que se generan las claves)
+# Herramienta privada de licencias (contiene la clave PRIVADA con la que firmo las licencias)
 herramienta-licencias/
-# Configuración local de herramientas
-.claude/
 instalador/
 *.exe
 *.msi

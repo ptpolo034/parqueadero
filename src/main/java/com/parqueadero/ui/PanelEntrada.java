@@ -19,10 +19,10 @@ import java.awt.*;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Punto único de ingreso: cuando llega un vehículo, aquí mismo se decide si es
- * para parqueo, para lavado, o para ambos — sin tener que ir a otra pestaña.
- * También es donde se registra un nuevo cliente de parqueo mensual, y donde se
- * puede verificar si una placa ya tiene una mensualidad activa.
+ * Mi punto único de ingreso: cuando llega un vehículo, aquí mismo decido si es
+ * para parqueo, para lavado, o para ambos, sin tener que ir a otra pestaña.
+ * También aquí registro un nuevo cliente de parqueo mensual y verifico
+ * si una placa ya tiene una mensualidad activa.
  */
 public class PanelEntrada extends JPanel {
     private final ParqueoService parqueoService;
@@ -64,11 +64,12 @@ public class PanelEntrada extends JPanel {
         setLayout(new BorderLayout());
         setOpaque(false);
 
-        // Vehículo
+        // Aquí armo los datos del vehículo
         campoPlaca = new JTextField();
         FiltroMayusculas.aplicar(campoPlaca);
         campoPlaca.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "ABC123");
         campoPlaca.putClientProperty(FlatClientProperties.STYLE, "font:bold +8; margin:6,14,6,14");
+        campoPlaca.addActionListener(e -> registrar()); // Con Enter en la placa registro la entrada: es lo más rápido con el lector de códigos
         JButton botonVerificarMensual = new JButton("Verificar mensualidad", Iconos.neutro("mensualidades", 16));
         botonVerificarMensual.addActionListener(e -> verificarMensualidad());
         comboTipo = new JComboBox<>(parqueoService.obtenerTiposVehiculo().toArray(new TipoVehiculo[0]));
@@ -81,7 +82,7 @@ public class PanelEntrada extends JPanel {
         formVehiculo.agregar(filaVerificar);
         labelTipo = formVehiculo.campo("Tipo de vehículo", comboTipo);
 
-        // Servicios
+        // Aquí armo los servicios
         checkParqueo = new JCheckBox("Parqueo", true);
         checkLavado = new JCheckBox("Lavado", false);
         checkMensual = new JCheckBox("Cliente mensual (nuevo)", false);
@@ -94,6 +95,7 @@ public class PanelEntrada extends JPanel {
         panelChecks.add(checkMensual);
 
         comboServicio = new JComboBox<>(lavadoService.obtenerServicios().toArray(new ServicioLavado[0]));
+        Formato.conPreciosFormateados(comboServicio);
         campoNombreDueno = new JTextField();
         campoTelefonoDueno = new JTextField();
         Formulario formServicios = new Formulario();
@@ -102,7 +104,7 @@ public class PanelEntrada extends JPanel {
         labelNombreDueno = formServicios.campo("Nombre del dueño (opcional)", campoNombreDueno);
         labelTelefonoDueno = formServicios.campo("Teléfono del dueño (opcional)", campoTelefonoDueno);
 
-        // Cliente mensual
+        // Aquí armo los datos del cliente mensual
         campoNombreMensual = new JTextField();
         campoTelefonoMensual = new JTextField();
         campoMontoMensual = new JTextField();
@@ -177,21 +179,29 @@ public class PanelEntrada extends JPanel {
         spinnerMeses.setEnabled(mensual);
     }
 
+    /** Dejo el cursor en la placa, listo para escribir o escanear (lo llamo al abrir esta pantalla). */
+    public void enfocar() {
+        SwingUtilities.invokeLater(campoPlaca::requestFocusInWindow);
+    }
+
     private void verificarMensualidad() {
         String placa = campoPlaca.getText().trim();
         if (placa.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Escribe primero la placa a verificar");
+            JOptionPane.showMessageDialog(this, "Escribe primero la placa a verificar", "Verificar mensualidad",
+                    JOptionPane.INFORMATION_MESSAGE);
             return;
         }
         Mensualidad mensualidad = mensualidadService.obtenerVigentePorPlaca(placa);
         DateTimeFormatter fmtFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         if (mensualidad == null) {
             JOptionPane.showMessageDialog(this, "La placa " + placa.toUpperCase() +
-                    " no tiene una mensualidad activa.\nMarca \"Registrar como cliente mensual\" para crear una.");
+                    " no tiene una mensualidad vigente.\nMarca «Cliente mensual (nuevo)» para crear una.",
+                    "Verificar mensualidad", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            JOptionPane.showMessageDialog(this, "✅ La placa " + mensualidad.getPlaca() +
-                    " tiene mensualidad activa hasta el " + mensualidad.getFechaVencimiento().format(fmtFecha) +
-                    ".\nNo se le cobrará por parqueo mientras esté vigente.");
+            JOptionPane.showMessageDialog(this, "La placa " + mensualidad.getPlaca() +
+                    " tiene mensualidad vigente hasta el " + mensualidad.getFechaVencimiento().format(fmtFecha) +
+                    ".\nNo se le cobrará por parqueo mientras esté vigente.",
+                    "Verificar mensualidad", JOptionPane.INFORMATION_MESSAGE);
         }
     }
 
@@ -252,7 +262,7 @@ public class PanelEntrada extends JPanel {
         }
     }
 
-    /** Se llama cuando otras pestañas modifican datos que afectan este formulario (p. ej. nuevos servicios de lavado). */
+    /** Lo llamo cuando otras pestañas modifican datos que afectan este formulario (p. ej. nuevos servicios de lavado). */
     public void refrescar() {
         Object tipoSeleccionado = comboTipo.getSelectedItem();
         comboTipo.removeAllItems();

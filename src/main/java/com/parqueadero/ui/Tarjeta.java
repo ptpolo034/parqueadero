@@ -10,7 +10,7 @@ import java.awt.LayoutManager;
 import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 
-/** Panel con esquinas redondeadas, fondo de "tarjeta" y un borde muy fino. */
+/** Aquí armo un panel con esquinas redondeadas, fondo de "tarjeta" y un borde muy fino. */
 public class Tarjeta extends JPanel {
 
     public Tarjeta(LayoutManager layout) {
@@ -19,7 +19,7 @@ public class Tarjeta extends JPanel {
         setBorder(new EmptyBorder(UIScale.scale(16), UIScale.scale(18), UIScale.scale(16), UIScale.scale(18)));
     }
 
-    /** Tarjeta con un título (y, si se da, un subtítulo) encima del contenido. */
+    /** Creo una tarjeta con un título (y, si lo doy, un subtítulo) encima del contenido. */
     public static Tarjeta conTitulo(String titulo, String subtitulo, java.awt.Component cuerpo) {
         Tarjeta t = new Tarjeta(new java.awt.BorderLayout(0, 12));
         JPanel cab = new JPanel(new java.awt.BorderLayout());

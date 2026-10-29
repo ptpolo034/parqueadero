@@ -16,9 +16,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 /**
- * "¿Qué quieres hacer con este vehículo?": se abre al escribir o escanear una placa en Inicio y, según
- * el estado del vehículo (dentro del parqueadero, con lavado pendiente, o que llega ahora), ofrece las
- * acciones posibles. Al elegir una, se cierra y la acción sigue su flujo (cobro, ticket, autorización...).
+ * "¿Qué quieres hacer con este vehículo?": lo abro al escribir o escanear una placa en Inicio y, según
+ * el estado del vehículo (dentro del parqueadero, con lavado pendiente, o que llega ahora), ofrezco las
+ * acciones posibles. Al elegir una, lo cierro y la acción sigue su flujo (cobro, ticket, autorización...).
  */
 public class DialogoVehiculo extends JDialog {
     private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("dd/MM HH:mm");
@@ -33,6 +33,7 @@ public class DialogoVehiculo extends JDialog {
         this.placa = placa;
         this.padre = padre;
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        Estilos.cerrarConEscape(this); // Esc cancela y vuelve al cuadro de placa
 
         Vehiculo dentro = acciones.parqueo().obtenerActivoPorPlaca(placa);
         List<RegistroLavado> lavadosPendientes = acciones.lavado().obtenerPendientesPorPlaca(placa);
@@ -54,7 +55,7 @@ public class DialogoVehiculo extends JDialog {
         setLocationRelativeTo(propietario);
     }
 
-    /** Abre el diálogo para la placa indicada. */
+    /** Abro el diálogo para la placa indicada. */
     public static void mostrar(Component padre, AccionesVehiculo acciones, String placa) {
         Window propietario = padre instanceof Window w ? w : SwingUtilities.getWindowAncestor(padre);
         new DialogoVehiculo(propietario, padre, acciones, placa).setVisible(true);
@@ -159,9 +160,11 @@ public class DialogoVehiculo extends JDialog {
         return cuerpo;
     }
 
-    /** Vehículo que no está dentro: registrar entrada (solo parqueo, parqueo + lavado o solo lavado) y, si hay, cobrar un lavado pendiente. */
+    /** Armo las opciones para un vehículo que no está dentro: registrar entrada (solo parqueo, parqueo + lavado o solo lavado) y, si hay, cobrar un lavado pendiente. */
     private JPanel construirCuerpoNuevo(Mensualidad mensualidad, List<RegistroLavado> pendientes) {
-        JComboBox<TipoVehiculo> comboTipo = comboTipos(mensualidad);
+        // Si la mensualidad ya venció, igual propongo su tipo de vehículo (así una moto vencida no queda en "CARRO" por error).
+        Mensualidad paraTipo = mensualidad != null ? mensualidad : acciones.mensualidades().obtenerActivaPorPlaca(placa);
+        JComboBox<TipoVehiculo> comboTipo = comboTipos(paraTipo);
         JComboBox<ServicioLavado> comboServicio = comboServicios();
 
         JPanel superior = new JPanel(new BorderLayout(0, 12));
@@ -239,7 +242,9 @@ public class DialogoVehiculo extends JDialog {
     }
 
     private JComboBox<ServicioLavado> comboServicios() {
-        return new JComboBox<>(acciones.lavado().obtenerServicios().toArray(new ServicioLavado[0]));
+        JComboBox<ServicioLavado> combo = new JComboBox<>(acciones.lavado().obtenerServicios().toArray(new ServicioLavado[0]));
+        Formato.conPreciosFormateados(combo);
+        return combo;
     }
 
     private static JPanel fila(String etiqueta, String valor) {
@@ -258,10 +263,10 @@ public class DialogoVehiculo extends JDialog {
     }
 
     private static String formato(int valor) {
-        return String.format("%,d", valor).replace(',', '.');
+        return Formato.dinero(valor).substring(1);
     }
 
-    /** Cierra este diálogo y, ya con la pantalla libre, ejecuta la acción elegida. */
+    /** Cierro este diálogo y, ya con la pantalla libre, ejecuto la acción elegida. */
     private void ejecutar(Runnable accion) {
         dispose();
         SwingUtilities.invokeLater(accion);

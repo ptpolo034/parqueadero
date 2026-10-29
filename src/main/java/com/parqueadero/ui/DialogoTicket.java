@@ -8,8 +8,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
- * Ticket que se entrega al cliente al registrar una entrada de parqueo o un lavado.
- * Incluye un código QR con la placa, para que al escanearlo en el mostrador de salida
+ * Aquí armo el ticket que le entrego al cliente al registrar una entrada de parqueo o un lavado.
+ * Le pongo un código QR con la placa, para que al escanearlo en el mostrador de salida
  * el sistema encuentre y cierre automáticamente el parqueo y/o el lavado pendientes.
  */
 public class DialogoTicket extends JDialog {
@@ -35,6 +35,9 @@ public class DialogoTicket extends JDialog {
         panelQR.add(labelInstruccion, BorderLayout.SOUTH);
         panelImprimible.add(panelQR, BorderLayout.CENTER);
 
+        // Lo que se imprime es "tal como se ve en pantalla": en tema oscuro saldría una hoja negra. Lo pinto siempre como papel.
+        pintarComoPapel(panelImprimible);
+
         JButton botonImprimir = new JButton("Imprimir ticket");
         JButton botonCerrar = new JButton("Cerrar");
         botonImprimir.addActionListener(e -> {
@@ -46,6 +49,9 @@ public class DialogoTicket extends JDialog {
             }
         });
         botonCerrar.addActionListener(e -> dispose());
+        // Enter y Esc cierran: con el lector de códigos o el teclado el cajero sigue con el siguiente vehículo sin tocar el ratón.
+        getRootPane().setDefaultButton(botonCerrar);
+        Estilos.cerrarConEscape(this);
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         botones.add(botonImprimir);
         botones.add(botonCerrar);
@@ -66,6 +72,17 @@ public class DialogoTicket extends JDialog {
         if (visible) {
             toFront();
             requestFocus();
+        }
+    }
+
+    /** Pongo fondo blanco y letras negras en el componente y en todo lo que lleva dentro, sin importar el tema. */
+    private static void pintarComoPapel(Component componente) {
+        componente.setBackground(Color.WHITE);
+        componente.setForeground(Color.BLACK);
+        if (componente instanceof Container contenedor) {
+            for (Component hijo : contenedor.getComponents()) {
+                pintarComoPapel(hijo);
+            }
         }
     }
 }

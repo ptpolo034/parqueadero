@@ -9,13 +9,13 @@ import java.awt.*;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Salida rápida: el cajero (o un lector de código de barras/QR conectado como teclado) escribe o escanea
- * la placa y presiona Enter. El sistema busca el parqueo activo y/o los lavados pendientes de esa placa y los
- * cierra uno por uno, pidiendo el pago de cada uno e imprimiendo su recibo. (Desde la pantalla de Inicio se puede
+ * Aquí reúno la salida rápida: el cajero (o un lector de código de barras/QR conectado como teclado) escribe o
+ * escanea la placa y presiona Enter. Busco el parqueo activo y/o los lavados pendientes de esa placa y los
+ * cierro uno por uno, pidiendo el pago de cada uno e imprimiendo su recibo. (Desde la pantalla de Inicio puedo
  * hacer lo mismo y además elegir otras acciones.)
  *
- * También hay botones para editar o cancelar la entrada activa de la placa escrita en el campo — visibles para
- * cualquier usuario, pero si quien los usa es un cajero, el sistema pide un administrador que autorice.
+ * También dejo botones para editar o cancelar la entrada activa de la placa escrita en el campo. Los ve
+ * cualquier usuario, pero si quien los usa es un cajero, pido que un administrador autorice.
  */
 public class PanelEscaneo extends JPanel {
     private final AccionesVehiculo acciones;
@@ -67,7 +67,7 @@ public class PanelEscaneo extends JPanel {
         SwingUtilities.invokeLater(campoEscaneo::requestFocusInWindow);
     }
 
-    /** Se llama cada vez que se muestra esta pestaña, para que el cursor quede listo para escanear. */
+    /** Lo llamo cada vez que se muestra esta pestaña, para que el cursor quede listo para escanear. */
     public void enfocar() {
         campoEscaneo.requestFocusInWindow();
     }

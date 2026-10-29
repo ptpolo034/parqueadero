@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Las operaciones que se pueden hacer con un vehículo (cobrar salida, registrar entrada o lavado, editar, cancelar),
- * con sus diálogos de cobro, tickets y autorizaciones. Las usan tanto la pantalla de inicio como "Escanear salida".
+ * Aquí reúno las operaciones que puedo hacer con un vehículo (cobrar salida, registrar entrada o lavado, editar, cancelar),
+ * con sus diálogos de cobro, tickets y autorizaciones. Las uso tanto desde la pantalla de inicio como desde "Escanear salida".
  */
 public class AccionesVehiculo {
     private final ParqueoService parqueoService;
@@ -66,7 +66,7 @@ public class AccionesVehiculo {
 
     // ---------------------------------------------------------------- salida
 
-    /** Cobra el parqueo activo y/o los lavados pendientes de la placa, uno por uno, con su recibo. */
+    /** Cobro el parqueo activo y/o los lavados pendientes de la placa, uno por uno, con su recibo. */
     public void cobrarSalida(Component padre, String placa, Consumer<String> registro) {
         try {
             Vehiculo vehiculoActivo = parqueoService.obtenerActivoPorPlaca(placa);
@@ -137,7 +137,7 @@ public class AccionesVehiculo {
 
     // ---------------------------------------------------------------- entrada y lavado
 
-    /** Registra la entrada de parqueo (y, si se da un servicio, también el lavado) y muestra el ticket con su QR. */
+    /** Registro la entrada de parqueo (y, si elijo un servicio, también el lavado) y muestro el ticket con su QR. */
     public void registrarEntrada(Component padre, String placa, TipoVehiculo tipo, ServicioLavado servicioLavado) {
         try {
             Vehiculo vehiculo = parqueoService.registrarEntrada(placa, tipo);
@@ -152,7 +152,7 @@ public class AccionesVehiculo {
         }
     }
 
-    /** Registra solo un lavado (el vehículo no se queda en el parqueadero) o suma un lavado a un vehículo que ya está dentro. */
+    /** Registro solo un lavado (el vehículo no se queda en el parqueadero) o le sumo un lavado a un vehículo que ya está dentro. */
     public void registrarLavado(Component padre, String placa, ServicioLavado servicio, Vehiculo vehiculoDentro) {
         try {
             RegistroLavado lavado = lavadoService.registrarLavado(placa, servicio,

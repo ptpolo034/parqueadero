@@ -37,8 +37,8 @@ de versión que está dentro del script.
 
 ## Licencias
 
-Las claves de activación se generan con una herramienta aparte que no subo a este repositorio, porque usa el secreto
-con el que se firman las claves.
+Las claves de activación son firmas digitales Ed25519. El programa solo lleva la clave pública (`util/ValidadorLicencia.java`);
+la privada y la herramienta que firma las claves viven aparte, en una carpeta que no subo a este repositorio.
 
 ## Estructura
 

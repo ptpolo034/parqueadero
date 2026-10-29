@@ -14,7 +14,7 @@ public class TarifaDAO {
         return leerColumna("precio_hora");
     }
 
-    /** Tope máximo a cobrar por cada 24 horas, por tipo de vehículo (0 = sin tope). */
+    /** Devuelvo el tope máximo que cobro por cada 24 horas, por tipo de vehículo (0 = sin tope). */
     public Map<String, Integer> obtenerTopesPorDia() {
         return leerColumna("precio_dia");
     }

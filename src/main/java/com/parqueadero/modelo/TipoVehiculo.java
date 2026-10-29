@@ -4,8 +4,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 /**
- * Tipo de vehículo (Carro, Moto, Camioneta...). Los tipos disponibles los define el administrador en
- * Tarifas, así que ya no es una lista fija: lo que identifica a un tipo es su nombre en mayúsculas.
+ * Aquí represento el tipo de vehículo (Carro, Moto, Camioneta...). Los tipos disponibles los define el
+ * administrador en Tarifas, así que ya no es una lista fija: lo que identifica a un tipo es su nombre en mayúsculas.
  */
 public final class TipoVehiculo {
     public static final TipoVehiculo CARRO = new TipoVehiculo("CARRO");

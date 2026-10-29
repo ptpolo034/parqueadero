@@ -15,7 +15,7 @@ public class AuthService {
         return usuarioDAO.contarUsuarios() > 0;
     }
 
-    /** Usado solo en el primer arranque, para crear la cuenta de administrador inicial. */
+    /** Lo uso solo en el primer arranque, para crear la cuenta de administrador inicial. */
     public void registrarAdministrador(String usuario, String contrasena) {
         registrar(usuario, contrasena, RolUsuario.ADMIN);
     }
@@ -31,19 +31,44 @@ public class AuthService {
         if (usuarioDAO.buscarPorUsuario(usuarioLimpio) != null) {
             throw new IllegalStateException("Ya existe un usuario con ese nombre");
         }
-        String salt = PasswordUtils.generarSalt();
-        String hash = PasswordUtils.hash(contrasena, salt);
-        usuarioDAO.crear(usuarioLimpio, hash, salt, rol);
+        // Guardo con PBKDF2; la sal va dentro del hash, por eso la columna salt queda vacía.
+        usuarioDAO.crear(usuarioLimpio, PasswordUtils.hashear(contrasena), "", rol);
     }
 
-    /** @return el usuario autenticado (con su rol), o {@code null} si las credenciales no son válidas. */
+    /**
+     * Valido el usuario y la contraseña. Si la contraseña estaba guardada con el formato viejo
+     * (SHA-256) y es correcta, la vuelvo a guardar en el formato nuevo sin que el usuario note nada.
+     *
+     * @return el usuario autenticado (con su rol), o {@code null} si las credenciales no son válidas.
+     */
     public Usuario autenticar(String usuario, String contrasena) {
         if (usuario == null || usuario.isBlank() || contrasena == null) {
             return null;
         }
         Usuario u = usuarioDAO.buscarPorUsuario(usuario.trim());
-        if (u == null || !PasswordUtils.verificar(contrasena, u.getSalt(), u.getHashContrasena())) {
+        if (u == null || !PasswordUtils.verificar(contrasena, u.getHashContrasena(), u.getSalt())) {
             return null;
+        }
+        return migrarHashSiHaceFalta(u, contrasena);
+    }
+
+    /**
+     * Si el hash es del formato viejo (o tiene menos iteraciones de las actuales) lo vuelvo a guardar.
+     * Si por algún motivo no puedo escribir en la base, el inicio de sesión sigue funcionando igual
+     * y lo intento de nuevo la próxima vez.
+     */
+    private Usuario migrarHashSiHaceFalta(Usuario u, String contrasena) {
+        if (!PasswordUtils.requiereActualizacion(u.getHashContrasena())) {
+            return u;
+        }
+        try {
+            String hashNuevo = PasswordUtils.hashear(contrasena);
+            if (usuarioDAO.migrarHash(u.getId(), u.getHashContrasena(), hashNuevo)) {
+                return new Usuario(u.getId(), u.getUsuario(), hashNuevo, "", u.getRol());
+            }
+        } catch (RuntimeException e) {
+            System.err.println("No pude actualizar el formato de la contraseña de " + u.getUsuario()
+                    + ": " + e.getMessage());
         }
         return u;
     }
@@ -76,9 +101,8 @@ public class AuthService {
         if (nuevaContrasena == null || nuevaContrasena.length() < 4) {
             throw new IllegalArgumentException("La contraseña debe tener al menos 4 caracteres");
         }
-        String salt = PasswordUtils.generarSalt();
-        String hash = PasswordUtils.hash(nuevaContrasena, salt);
-        usuarioDAO.actualizarContrasena(idUsuario, hash, salt);
+        // Siempre guardo en el formato nuevo (PBKDF2), con la sal dentro del hash.
+        usuarioDAO.actualizarContrasena(idUsuario, PasswordUtils.hashear(nuevaContrasena), "");
     }
 
     public void eliminarUsuario(int idUsuario, int idUsuarioActual) {

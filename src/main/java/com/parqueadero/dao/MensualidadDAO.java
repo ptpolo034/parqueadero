@@ -16,7 +16,7 @@ import java.util.List;
 
 public class MensualidadDAO {
 
-    /** Crea la mensualidad y registra su primer pago en una sola transacción: o quedan las dos cosas, o ninguna. */
+    /** Creo la mensualidad y registro su primer pago en una sola transacción: o quedan las dos cosas, o ninguna. */
     public Mensualidad crearConPago(Mensualidad mensualidad, PagoMensualidad pago) {
         try (Connection con = ConexionBD.obtenerConexion()) {
             con.setAutoCommit(false);
@@ -35,7 +35,7 @@ public class MensualidadDAO {
         }
     }
 
-    /** Extiende el vencimiento y registra el pago en una sola transacción. */
+    /** Extiendo el vencimiento y registro el pago en una sola transacción. */
     public void renovarConPago(int id, LocalDate nuevaFechaVencimiento, PagoMensualidad pago) {
         try (Connection con = ConexionBD.obtenerConexion()) {
             con.setAutoCommit(false);
@@ -56,7 +56,7 @@ public class MensualidadDAO {
         }
     }
 
-    /** Cancela la mensualidad y deja constancia en la auditoría dentro de la misma transacción. */
+    /** Dejo la mensualidad como cancelada (no la borro) y dejo constancia en la auditoría dentro de la misma transacción. */
     public void cancelar(int id, String usuario, String autorizadoPor, String detalleAuditoria) {
         try (Connection con = ConexionBD.obtenerConexion()) {
             con.setAutoCommit(false);
@@ -104,7 +104,7 @@ public class MensualidadDAO {
         return mensualidades;
     }
 
-    /** Total cobrado en mensualidades (nuevas y renovaciones) entre dos fechas, calculado en la base de datos. */
+    /** Devuelvo el total cobrado en mensualidades (nuevas y renovaciones) entre dos fechas; lo sumo en la base de datos. */
     public int totalPagosEnRango(LocalDate desde, LocalDate hasta) {
         String sql = "SELECT COALESCE(SUM(monto), 0) AS t FROM pagos_mensualidad "
                 + "WHERE substr(fecha_pago, 1, 10) BETWEEN ? AND ?";

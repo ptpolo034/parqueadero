@@ -281,10 +281,11 @@ public class VentanaPrincipal extends JFrame {
         b.setHorizontalAlignment(JToggleButton.LEFT);
         b.setFocusable(false);
         b.setAlignmentX(Component.LEFT_ALIGNMENT);
-        b.setMaximumSize(new Dimension(Integer.MAX_VALUE, UIScale.scale(36)));
+        b.setMaximumSize(new Dimension(Integer.MAX_VALUE, UIScale.scale(34)));
         b.putClientProperty(FlatClientProperties.BUTTON_TYPE, FlatClientProperties.BUTTON_TYPE_TOOLBAR_BUTTON);
+        // Uso márgenes verticales de 5 (antes eran 7): así todo el menú, hasta Configuración, cabe en una ventana de 700 de alto.
         b.putClientProperty(FlatClientProperties.STYLE,
-                "arc:12; margin:7,12,7,12; toolbar.margin:7,12,7,12; toolbar.spacingInsets:1,0,1,0;"
+                "arc:12; margin:5,12,5,12; toolbar.margin:5,12,5,12; toolbar.spacingInsets:1,0,1,0;"
                         + "selectedForeground:$Component.accentColor;"
                         + "toolbar.selectedBackground:fade($Component.accentColor,14%);"
                         + "toolbar.hoverBackground:fade($Component.accentColor,7%);"
@@ -302,12 +303,15 @@ public class VentanaPrincipal extends JFrame {
         }
         titulos.put(clave, titulo);
         panel.setOpaque(false);
-        zonaContenido.add(panel, clave);
+        // Estiro cada pantalla hasta llenar la ventana; si la ventana es muy baja (mínimo 1120x700) dejo que aparezca
+        // la barra de desplazamiento en lugar de aplastar las tablas o dejar botones fuera de alcance.
+        // Entrada ya trae su propio desplazamiento interno, así que la dejo como está.
+        zonaContenido.add(clave.equals("entrada") ? panel : Pagina.desplazableAjustable(panel), clave);
     }
 
     // ---------------------------------------------------------------- comportamiento
 
-    /** Muestra una página por su clave (también la usan los atajos de la pantalla de inicio). */
+    /** Muestro una página por su clave (también la usan los atajos de la pantalla de inicio). */
     private void mostrar(String clave) {
         if (!titulos.containsKey(clave)) {
             return;
@@ -320,10 +324,15 @@ public class VentanaPrincipal extends JFrame {
         }
         tituloPagina.setText(titulos.get(clave));
         refrescarTodo();
+        // Dejo el cursor listo en el primer campo de las pantallas que se usan con teclado o lector de códigos.
         if (clave.equals("salida")) {
             panelEscaneo.enfocar();
         } else if (clave.equals("inicio")) {
             panelInicio.enfocar();
+        } else if (clave.equals("entrada")) {
+            panelEntrada.enfocar();
+        } else if (clave.equals("lavado")) {
+            panelLavado.enfocar();
         }
     }
 
@@ -347,7 +356,7 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
-    /** Actualiza la cabecera y solo la pantalla que se está viendo (las demás se actualizan al abrirlas). */
+    /** Actualizo la cabecera y solo la pantalla que se está viendo (las demás las actualizo al abrirlas). */
     private void refrescarTodo() {
         fechaPagina.setText(capitalizar(LocalDate.now().format(
                 DateTimeFormatter.ofPattern("EEEE d 'de' MMMM 'de' yyyy", new Locale("es", "CO")))));
@@ -383,7 +392,7 @@ public class VentanaPrincipal extends JFrame {
 
     // ---------------------------------------------------------------- piezas visuales
 
-    /** Fondo de la barra lateral: color de tarjeta y una línea fina a la derecha. */
+    /** Pinto el fondo de la barra lateral: color de tarjeta y una línea fina a la derecha. */
     private static class PanelBarra extends JPanel {
         PanelBarra() {
             setOpaque(false);
@@ -399,7 +408,7 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
-    /** Ícono del menú: gris en reposo y del color de acento cuando la opción está seleccionada. */
+    /** Dibujo el ícono del menú: gris en reposo y del color de acento cuando la opción está seleccionada. */
     private static class IconoNavegacion implements Icon {
         private final FlatSVGIcon reposo;
         private final FlatSVGIcon activo;

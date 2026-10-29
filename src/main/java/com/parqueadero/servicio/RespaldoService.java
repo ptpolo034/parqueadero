@@ -17,8 +17,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Genera copias de seguridad de la base de datos SQLite. Usa VACUUM INTO, que produce una copia consistente
- * aunque haya movimientos recientes en el archivo WAL; si eso falla, copia el archivo directamente.
+ * Aquí genero las copias de seguridad de la base de datos SQLite. Uso VACUUM INTO, que produce una copia consistente
+ * aunque haya movimientos recientes en el archivo WAL; si eso falla, copio el archivo directamente.
  */
 public class RespaldoService {
     private static final Path CARPETA_RESPALDOS = Path.of(System.getProperty("user.home"), "parqueadero-backups");
@@ -29,7 +29,7 @@ public class RespaldoService {
         return respaldarEn(CARPETA_RESPALDOS, "parqueadero_");
     }
 
-    /** Copia la base de datos en la carpeta indicada (por ejemplo, una memoria USB o una carpeta sincronizada). */
+    /** Copio la base de datos en la carpeta indicada (por ejemplo, una memoria USB o una carpeta sincronizada). */
     public Path respaldarEnCarpeta(Path carpetaDestino) {
         return respaldarEn(carpetaDestino, "parqueadero_");
     }
@@ -58,7 +58,7 @@ public class RespaldoService {
         }
     }
 
-    /** Genera un respaldo automático solo si hoy todavía no se ha hecho ninguno. */
+    /** Genero un respaldo automático solo si hoy todavía no hice ninguno. */
     public void respaldarSiNoExisteHoy() {
         String prefijoHoy = "parqueadero_" + LocalDate.now().toString().replace("-", "");
         boolean existeHoy;

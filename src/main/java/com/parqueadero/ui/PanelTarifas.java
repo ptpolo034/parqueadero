@@ -1,6 +1,7 @@
 package com.parqueadero.ui;
 
 import com.formdev.flatlaf.FlatClientProperties;
+import com.formdev.flatlaf.util.UIScale;
 import com.parqueadero.modelo.ConfiguracionNegocio;
 import com.parqueadero.modelo.ServicioLavado;
 import com.parqueadero.servicio.ConfiguracionService;
@@ -13,7 +14,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
-/** Precios del parqueo (por tipo de vehículo), reglas de cobro y servicios de lavado, todo editable por el administrador. */
+/** Aquí reúno los precios del parqueo (por tipo de vehículo), las reglas de cobro y los servicios de lavado, todo editable por el administrador. */
 public class PanelTarifas extends JPanel {
     private static final Integer[] FRACCIONES = {60, 30, 20, 15};
 
@@ -60,11 +61,14 @@ public class PanelTarifas extends JPanel {
                 return col >= 1 ? Integer.class : String.class;
             }
         };
-        tablaTarifasParqueo = Tablas.crear(modeloTarifasParqueo);
+        tablaTarifasParqueo = Tablas.crear(modeloTarifasParqueo, "Aún no hay tipos de vehículo");
+        // Muestro los precios con punto de miles ($3.000) y el tope 0 como "Sin tope"; al editarlos se escribe el número.
+        tablaTarifasParqueo.getColumnModel().getColumn(1).setCellRenderer(new RenderDinero(false));
+        tablaTarifasParqueo.getColumnModel().getColumn(2).setCellRenderer(new RenderDinero(true));
 
-        campoNombreTipo.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nuevo tipo (ej: Camioneta)");
-        campoPrecioHoraTipo.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Por hora");
-        campoTopeDiaTipo.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tope día");
+        campoNombreTipo.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nuevo tipo");
+        campoPrecioHoraTipo.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Hora");
+        campoTopeDiaTipo.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Tope");
         JButton botonAgregarTipo = Estilos.primario(new JButton("Agregar tipo"));
         JButton botonGuardarTarifas = new JButton("Guardar tarifas");
         JButton botonEliminarTipo = new JButton("Eliminar seleccionado");
@@ -88,7 +92,7 @@ public class PanelTarifas extends JPanel {
         cuerpoParqueo.add(sinBorde(new JScrollPane(tablaTarifasParqueo)), BorderLayout.CENTER);
         cuerpoParqueo.add(pieParqueo, BorderLayout.SOUTH);
         Tarjeta tarjetaParqueo = Tarjeta.conTitulo("Tarifas de parqueo",
-                "Doble clic en un precio para editarlo. Tope por día: 0 = sin tope", cuerpoParqueo);
+                "Doble clic en un valor para editarlo", cuerpoParqueo);
 
         // --- Reglas de cobro ---
         JButton botonGuardarReglas = Estilos.primario(new JButton("Guardar reglas"));
@@ -123,7 +127,10 @@ public class PanelTarifas extends JPanel {
                 return col == 0 || col == 2 ? Integer.class : String.class;
             }
         };
-        tablaServicios = Tablas.crear(modeloServicios);
+        tablaServicios = Tablas.crear(modeloServicios, "Aún no hay servicios de lavado");
+        tablaServicios.getColumnModel().getColumn(2).setCellRenderer(new RenderDinero(false));
+        // El número interno (ID) no le sirve a quien edita precios: lo escondo de la vista pero queda en el modelo.
+        tablaServicios.removeColumn(tablaServicios.getColumnModel().getColumn(0));
 
         campoNombreServicio.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Nombre del servicio");
         campoPrecioServicio.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "Precio");
@@ -154,7 +161,7 @@ public class PanelTarifas extends JPanel {
                 cuerpoServicios));
     }
 
-    /** Fila de campos que se reparten el ancho (el primero se estira) con el botón al final. */
+    /** Armo una fila de campos que se reparten el ancho (el primero se estira) con el botón al final. */
     private static JPanel filaCampos(JButton boton, JTextField... campos) {
         JPanel fila = new JPanel(new GridBagLayout());
         fila.setOpaque(false);
@@ -163,6 +170,8 @@ public class PanelTarifas extends JPanel {
         gbc.insets = new Insets(0, 0, 0, 8);
         for (int i = 0; i < campos.length; i++) {
             campos[i].setColumns(1);
+            // Pongo un mínimo para que ningún campo quede diminuto en ventanas pequeñas.
+            campos[i].setMinimumSize(new Dimension(UIScale.scale(i == 0 ? 90 : 78), campos[i].getMinimumSize().height));
             gbc.gridx = i;
             gbc.weightx = i == 0 ? 1 : 0.35;
             fila.add(campos[i], gbc);
@@ -325,6 +334,25 @@ public class PanelTarifas extends JPanel {
     private void detenerEdicion(JTable tabla) {
         if (tabla.isEditing()) {
             tabla.getCellEditor().stopCellEditing();
+        }
+    }
+
+    /** Muestro los enteros como dinero a la derecha; si {@code ceroEsSinTope}, el 0 lo muestro como "Sin tope". */
+    private static class RenderDinero extends javax.swing.table.DefaultTableCellRenderer {
+        private final boolean ceroEsSinTope;
+
+        RenderDinero(boolean ceroEsSinTope) {
+            this.ceroEsSinTope = ceroEsSinTope;
+            setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
+        }
+
+        @Override
+        protected void setValue(Object valor) {
+            if (valor instanceof Number n) {
+                setText(ceroEsSinTope && n.intValue() == 0 ? "Sin tope" : Formato.dinero(n.intValue()));
+            } else {
+                super.setValue(valor);
+            }
         }
     }
 }

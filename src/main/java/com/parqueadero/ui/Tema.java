@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-/** Apariencia de toda la aplicación: tipografía Inter, colores y modo claro/oscuro. */
+/** Aquí manejo la apariencia de toda la aplicación: tipografía Inter, colores y modo claro/oscuro. */
 public final class Tema {
     private static final Path ARCHIVO = Path.of(System.getProperty("user.home"), ".parqueadero", "tema.txt");
 
@@ -22,7 +22,7 @@ public final class Tema {
     private Tema() {
     }
 
-    /** Se llama una sola vez al arrancar, antes de crear cualquier ventana. */
+    /** Lo llamo una sola vez al arrancar, antes de crear cualquier ventana. */
     public static void instalar() {
         FlatInterFont.install();
         FlatLaf.setPreferredFontFamily(FlatInterFont.FAMILY);
@@ -30,6 +30,14 @@ public final class Tema {
         FlatLaf.setPreferredSemiboldFontFamily(FlatInterFont.FAMILY_SEMIBOLD);
         FlatLaf.registerCustomDefaultsSource("com.parqueadero.tema");
         UIManager.put("defaultFont", new FontUIResource(FlatInterFont.FAMILY, Font.PLAIN, 13));
+        // Dejo los botones de los avisos y preguntas siempre en español, sin depender del idioma de Windows o de Java.
+        UIManager.put("OptionPane.yesButtonText", "Sí");
+        UIManager.put("OptionPane.noButtonText", "No");
+        UIManager.put("OptionPane.okButtonText", "Aceptar");
+        UIManager.put("OptionPane.cancelButtonText", "Cancelar");
+        UIManager.put("OptionPane.messageDialogTitle", "Aviso");
+        UIManager.put("OptionPane.inputDialogTitle", "Escribe un dato");
+        UIManager.put("OptionPane.titleText", "Seleccione una opción");
         oscuro = leerPreferencia();
         aplicar();
     }
@@ -38,7 +46,7 @@ public final class Tema {
         return oscuro;
     }
 
-    /** Cambia entre claro y oscuro, refresca las ventanas abiertas y recuerda la elección. */
+    /** Cambio entre claro y oscuro, refresco las ventanas abiertas y guardo la elección. */
     public static void alternar() {
         oscuro = !oscuro;
         guardarPreferencia();
@@ -59,15 +67,10 @@ public final class Tema {
         return c != null ? c : new Color(0x2563EB);
     }
 
-    /** Fondo de las tarjetas (igual al de los campos de texto, que contrasta con el fondo de la página). */
+    /** Devuelvo el fondo de las tarjetas (igual al de los campos de texto, que contrasta con el fondo de la página). */
     public static Color fondoTarjeta() {
         Color c = UIManager.getColor("TextField.background");
         return c != null ? c : Color.WHITE;
-    }
-
-    public static Color fondoPagina() {
-        Color c = UIManager.getColor("Panel.background");
-        return c != null ? c : new Color(0xF3F5F9);
     }
 
     public static Color borde() {
@@ -104,7 +107,7 @@ public final class Tema {
             Files.createDirectories(ARCHIVO.getParent());
             Files.writeString(ARCHIVO, oscuro ? "oscuro" : "claro");
         } catch (IOException e) {
-            // No es crítico: simplemente no se recuerda la elección.
+            // No es crítico: si falla, simplemente no se guarda la elección.
         }
     }
 }

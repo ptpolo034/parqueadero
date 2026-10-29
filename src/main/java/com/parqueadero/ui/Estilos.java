@@ -4,24 +4,30 @@ import com.formdev.flatlaf.FlatClientProperties;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.formdev.flatlaf.util.UIScale;
 
+import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
+import javax.swing.JRootPane;
+import javax.swing.KeyStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 
-/** Pequeñas ayudas para dar a los componentes el estilo visual de la aplicación. */
+/** Aquí reúno las ayudas pequeñas que le dan a los componentes el estilo visual de la aplicación. */
 public final class Estilos {
     private Estilos() {
     }
 
-    /** Colores semánticos que se resuelven en el momento de pintar (así respetan el tema claro/oscuro). */
+    /** Colores semánticos que resuelvo en el momento de pintar (así respetan el tema claro/oscuro). */
     public enum Tono {
         ACENTO, VERDE, AMBAR, ROJO, NEUTRO;
 
@@ -40,7 +46,7 @@ public final class Estilos {
         return primario(boton, "font:semibold");
     }
 
-    /** Botón de acción principal, más alto y con letra más marcada (formularios grandes, inicio de sesión). */
+    /** Botón de acción principal, más alto y con letra más marcada (lo uso en los formularios grandes y en el inicio de sesión). */
     public static JButton primarioGrande(JButton boton) {
         return primario(boton, "font:bold +1; margin:11,20,11,20");
     }
@@ -77,11 +83,23 @@ public final class Estilos {
         return l;
     }
 
-    /** Etiqueta pequeña en mayúsculas para encabezar secciones. */
+    /** Creo una etiqueta pequeña en mayúsculas para encabezar secciones. */
     public static JLabel seccion(String texto) {
         JLabel l = new JLabel(texto.toUpperCase());
         l.putClientProperty(FlatClientProperties.STYLE, "font:bold -2; foreground:$Label.disabledForeground");
         return l;
+    }
+
+    /** Hago que la tecla Esc cierre el diálogo (todos mis diálogos de cobro y avisos se pueden cancelar con el teclado). */
+    public static void cerrarConEscape(JDialog dialogo) {
+        JRootPane raiz = dialogo.getRootPane();
+        raiz.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), "cerrarDialogo");
+        raiz.getActionMap().put("cerrarDialogo", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialogo.dispose();
+            }
+        });
     }
 
     public static void fuente(JComponent c, int estilo, float tamano) {
@@ -89,7 +107,7 @@ public final class Estilos {
         c.setFont(base.deriveFont(estilo, tamano));
     }
 
-    /** Círculo con un ícono dentro, con un tono suave de fondo. */
+    /** Dibujo un círculo con un ícono dentro, con un tono suave de fondo. */
     public static Icon iconoCircular(String nombre, Tono tono, int diametro) {
         return new Icon() {
             private final FlatSVGIcon svg = svgConTono(nombre, tono, diametro / 2);
@@ -125,7 +143,7 @@ public final class Estilos {
         return icono;
     }
 
-    /** Avatar redondo con la inicial del usuario. */
+    /** Dibujo un avatar redondo con la inicial del usuario. */
     public static Icon avatar(String nombre, int diametro) {
         String inicial = (nombre == null || nombre.isBlank()) ? "?" : nombre.substring(0, 1).toUpperCase();
         return new Icon() {

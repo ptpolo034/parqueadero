@@ -73,7 +73,7 @@ public class PanelReportes extends JPanel {
 
     private JSpinner crearSpinnerFecha() {
         JSpinner spinner = new JSpinner(new SpinnerDateModel());
-        spinner.setEditor(new JSpinner.DateEditor(spinner, "yyyy-MM-dd"));
+        spinner.setEditor(new JSpinner.DateEditor(spinner, "dd/MM/yyyy"));
         spinner.setValue(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()));
         return spinner;
     }
@@ -111,7 +111,7 @@ public class PanelReportes extends JPanel {
     }
 
     private static String dinero(int valor) {
-        return "$" + String.format("%,d", valor).replace(',', '.');
+        return Formato.dinero(valor);
     }
 
     private void exportarCSV() {

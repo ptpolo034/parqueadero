@@ -10,7 +10,7 @@ public class PanelLicencia extends JPanel {
     private final LicenciaService licenciaService;
     private final Pildora pildoraEstado = new Pildora("", Estilos.Tono.AMBAR);
     private final JTextField campoId = new JTextField(20);
-    private final JTextField campoClave = new JTextField(20);
+    private final CampoClaveActivacion campoClave = new CampoClaveActivacion(this::activar);
     private final JButton botonActivar = Estilos.primario(new JButton("Activar"));
 
     public PanelLicencia(LicenciaService licenciaService) {
@@ -21,7 +21,6 @@ public class PanelLicencia extends JPanel {
 
         campoId.setEditable(false);
         campoId.putClientProperty(FlatClientProperties.STYLE, "font:bold +2");
-        campoClave.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "XXXX-XXXX-XXXX-XXXX");
         botonActivar.addActionListener(e -> activar());
 
         JPanel filaEstado = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
@@ -68,9 +67,9 @@ public class PanelLicencia extends JPanel {
 
     private void activar() {
         try {
-            licenciaService.activar(campoClave.getText());
+            licenciaService.activar(campoClave.getTexto());
             JOptionPane.showMessageDialog(this, "¡Software activado correctamente! Gracias por tu compra.");
-            campoClave.setText("");
+            campoClave.setTexto("");
             refrescar();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);

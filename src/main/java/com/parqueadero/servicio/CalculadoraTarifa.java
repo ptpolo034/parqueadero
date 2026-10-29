@@ -1,13 +1,13 @@
 package com.parqueadero.servicio;
 
 /**
- * Reglas de cobro del parqueo (sin acceso a la base de datos, para poder probarlas fácilmente):
+ * Aquí reúno las reglas de cobro del parqueo. No toco la base de datos, así las pruebo fácilmente:
  * <ul>
- *   <li><b>Gracia:</b> si el vehículo estuvo hasta {@code minutosGracia} minutos, no paga nada.</li>
- *   <li><b>Fracción:</b> se cobra por bloques de {@code minutosFraccion} minutos (60 = hora o fracción;
- *       30 = media hora o fracción). Siempre se cobra al menos un bloque.</li>
- *   <li><b>Tope por día:</b> si {@code precioDia > 0}, cada período de 24 horas cuesta como máximo ese valor,
- *       y el tiempo restante nunca cuesta más que él.</li>
+ *   <li><b>Gracia:</b> si el vehículo estuvo hasta {@code minutosGracia} minutos, no le cobro nada.</li>
+ *   <li><b>Fracción:</b> cobro por bloques de {@code minutosFraccion} minutos (60 = hora o fracción;
+ *       30 = media hora o fracción). Siempre cobro al menos un bloque.</li>
+ *   <li><b>Tope por día:</b> si {@code precioDia > 0}, cada período de 24 horas lo cobro como máximo a ese valor,
+ *       y el tiempo restante nunca lo cobro por encima de él.</li>
  * </ul>
  */
 public final class CalculadoraTarifa {

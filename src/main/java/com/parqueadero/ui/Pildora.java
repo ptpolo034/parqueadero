@@ -11,7 +11,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 
-/** Etiqueta en forma de píldora con un tono suave de fondo (estado, contador, aviso...). */
+/** Esta clase me sirve para pintar una etiqueta en forma de píldora con un tono suave de fondo (estado, contador, aviso...). */
 public class Pildora extends JLabel {
     private Estilos.Tono tono;
 

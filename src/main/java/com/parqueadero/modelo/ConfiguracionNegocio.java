@@ -31,12 +31,12 @@ public class ConfiguracionNegocio {
         this.minutosFraccion = minutosFraccion;
     }
 
-    /** Minutos iniciales sin costo (0 = no hay tiempo de gracia). */
+    /** Devuelvo los minutos iniciales que no cobro (0 = no hay tiempo de gracia). */
     public int getMinutosGracia() {
         return minutosGracia;
     }
 
-    /** Cada cuántos minutos se cobra: 60 = hora completa o fracción; 30 = media hora o fracción, etc. */
+    /** Devuelvo cada cuántos minutos cobro: 60 = hora completa o fracción; 30 = media hora o fracción, etc. */
     public int getMinutosFraccion() {
         return minutosFraccion;
     }

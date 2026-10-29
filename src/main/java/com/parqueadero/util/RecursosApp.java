@@ -7,8 +7,8 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 
 /**
- * Maneja recursos personalizables de la aplicación, como el logo del negocio,
- * guardándolos en una carpeta de datos del usuario para que persistan entre ejecuciones.
+ * Aquí manejo los recursos que el cliente puede personalizar, como el logo del negocio, y los guardo
+ * en una carpeta de datos del usuario para que no se pierdan entre ejecuciones.
  */
 public final class RecursosApp {
     private static final Path CARPETA_DATOS = Path.of(System.getProperty("user.home"), ".parqueadero");

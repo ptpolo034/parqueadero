@@ -133,7 +133,7 @@ public class LavadoDAO {
                 "WHERE l.estado = 'PENDIENTE' AND l.placa = ? ORDER BY l.fecha_inicio DESC", placa);
     }
 
-    /** Historial de lavados completados (más recientes primero), con filtros opcionales y siempre con límite. */
+    /** Devuelvo el historial de lavados completados (los más recientes primero), con filtros opcionales y siempre con límite. */
     public List<RegistroLavado> obtenerHistorial(String placaContiene, LocalDate desde, int limite) {
         StringBuilder sql = new StringBuilder("SELECT l.*, s.nombre AS servicio_nombre, s.precio AS servicio_precio "
                 + "FROM lavados l JOIN servicios_lavado s ON l.servicio_id = s.id WHERE l.estado = 'COMPLETADO'");

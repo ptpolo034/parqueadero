@@ -13,7 +13,7 @@ import java.util.List;
 
 public class AuditoriaDAO {
 
-    /** Inserta usando una conexión ya abierta, para que quede dentro de la misma transacción que la acción auditada. */
+    /** Inserto usando una conexión ya abierta, para que quede dentro de la misma transacción que la acción auditada. */
     public static void registrar(Connection con, String usuario, String autorizadoPor, String accion, String detalle)
             throws SQLException {
         String sql = "INSERT INTO auditoria (fecha_hora, usuario, autorizado_por, accion, detalle) VALUES (?, ?, ?, ?, ?)";
@@ -35,7 +35,7 @@ public class AuditoriaDAO {
         }
     }
 
-    /** Los registros más recientes, opcionalmente filtrados por fecha mínima y por texto (usuario, acción o detalle). */
+    /** Devuelvo los registros más recientes, y si quiero los filtro por fecha mínima y por texto (usuario, acción o detalle). */
     public List<RegistroAuditoria> listar(LocalDate desde, String texto, int limite) {
         StringBuilder sql = new StringBuilder("SELECT * FROM auditoria WHERE 1=1");
         List<Object> parametros = new ArrayList<>();

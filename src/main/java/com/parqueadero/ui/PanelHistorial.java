@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-/** Historial de parqueos y lavados ya cobrados, con búsqueda por placa y período (siempre limitado en cantidad). */
+/** Aquí muestro el historial de parqueos y lavados ya cobrados, con búsqueda por placa y período (siempre limito la cantidad). */
 public class PanelHistorial extends JPanel {
     private static final int LIMITE = 500;
     private static final String[] PERIODOS = {"Hoy", "Últimos 7 días", "Últimos 30 días", "Últimos 90 días", "Todo"};
@@ -63,7 +63,8 @@ public class PanelHistorial extends JPanel {
                 return false;
             }
         };
-        JTable tablaParqueo = Tablas.crear(modeloParqueo);
+        JTable tablaParqueo = Tablas.crear(modeloParqueo, "No hay parqueos terminados en este período");
+        Tablas.alinearDerecha(tablaParqueo, "Total", "Pagó", "Vuelto");
         Tarjeta panelParqueo = Tarjeta.conTitulo("Historial de parqueo", "Vehículos que ya salieron",
                 sinBorde(new JScrollPane(tablaParqueo)));
 
@@ -73,7 +74,8 @@ public class PanelHistorial extends JPanel {
                 return false;
             }
         };
-        JTable tablaLavado = Tablas.crear(modeloLavado);
+        JTable tablaLavado = Tablas.crear(modeloLavado, "No hay lavados terminados en este período");
+        Tablas.alinearDerecha(tablaLavado, "Precio", "Pagó", "Vuelto");
         Tarjeta panelLavado = Tarjeta.conTitulo("Historial de lavados", "Servicios de lavado completados",
                 sinBorde(new JScrollPane(tablaLavado)));
 
@@ -101,7 +103,6 @@ public class PanelHistorial extends JPanel {
     }
 
     public void refrescar() {
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         String placa = campoPlaca.getText();
         LocalDate desde = fechaDesde();
 
@@ -109,10 +110,10 @@ public class PanelHistorial extends JPanel {
         modeloParqueo.setRowCount(0);
         for (Vehiculo v : vehiculos) {
             modeloParqueo.addRow(new Object[]{
-                    v.getPlaca(), v.getTipo(), v.getHoraEntrada().format(fmt),
-                    v.getHoraSalida().format(fmt), "$" + v.getTotalParqueo(),
-                    v.getMontoPagado() != null ? "$" + v.getMontoPagado() : "",
-                    v.getVuelto() != null ? "$" + v.getVuelto() : "",
+                    v.getPlaca(), v.getTipo(), Formato.fechaHora(v.getHoraEntrada()),
+                    Formato.fechaHora(v.getHoraSalida()), Formato.dineroONada(v.getTotalParqueo()),
+                    Formato.dineroONada(v.getMontoPagado()),
+                    Formato.dineroONada(v.getVuelto()),
                     v.getUsuarioSalida() != null ? v.getUsuarioSalida() : "",
                     v.isEsMensual() ? "Sí" : "No"
             });
@@ -122,12 +123,12 @@ public class PanelHistorial extends JPanel {
         modeloLavado.setRowCount(0);
         for (RegistroLavado r : lavados) {
             modeloLavado.addRow(new Object[]{
-                    r.getPlaca(), r.getServicio().getNombre(), "$" + r.getPrecio(),
-                    r.getFechaInicio().format(fmt), r.getFechaFin().format(fmt),
+                    r.getPlaca(), r.getServicio().getNombre(), Formato.dinero(r.getPrecio()),
+                    Formato.fechaHora(r.getFechaInicio()), Formato.fechaHora(r.getFechaFin()),
                     r.getNombreDueno() != null ? r.getNombreDueno() : "",
                     r.getTelefonoDueno() != null ? r.getTelefonoDueno() : "",
-                    r.getMontoPagado() != null ? "$" + r.getMontoPagado() : "",
-                    r.getVuelto() != null ? "$" + r.getVuelto() : "",
+                    Formato.dineroONada(r.getMontoPagado()),
+                    Formato.dineroONada(r.getVuelto()),
                     r.getUsuarioFin() != null ? r.getUsuarioFin() : ""
             });
         }

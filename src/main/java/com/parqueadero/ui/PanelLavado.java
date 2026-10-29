@@ -48,11 +48,15 @@ public class PanelLavado extends JPanel {
         campoPlaca.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "ABC123");
         campoPlaca.putClientProperty(FlatClientProperties.STYLE, "font:bold +6; margin:6,12,6,12");
         comboServicio = new JComboBox<>(lavadoService.obtenerServicios().toArray(new ServicioLavado[0]));
+        Formato.conPreciosFormateados(comboServicio);
         comboVehiculo = new JComboBox<>();
         campoNombreDueno = new JTextField();
         campoTelefonoDueno = new JTextField();
         JButton botonRegistrar = Estilos.primarioGrande(new JButton("Registrar lavado", Iconos.color("lavado", 18, Color.WHITE)));
         botonRegistrar.addActionListener(e -> registrar());
+        // Cuando presiono Enter en el nombre o el teléfono del dueño (los últimos campos), registro el lavado.
+        campoNombreDueno.addActionListener(e -> registrar());
+        campoTelefonoDueno.addActionListener(e -> registrar());
 
         Formulario formulario = new Formulario();
         formulario.campo("Placa", campoPlaca);
@@ -66,7 +70,7 @@ public class PanelLavado extends JPanel {
         envoltorioForm.setOpaque(false);
         envoltorioForm.add(Tarjeta.conTitulo("Nuevo lavado", "Para vehículos que solo vienen a lavar", formulario),
                 BorderLayout.NORTH);
-        envoltorioForm.setPreferredSize(new Dimension(400, 0));
+        envoltorioForm.setPreferredSize(new Dimension(290, 0));
         add(envoltorioForm, BorderLayout.WEST);
 
         modeloPendientes = new DefaultTableModel(new Object[]{"ID", "Placa", "Servicio", "Precio", "Inicio", "Dueño", "Teléfono"}, 0) {
@@ -75,7 +79,10 @@ public class PanelLavado extends JPanel {
                 return false;
             }
         };
-        tablaPendientes = Tablas.crear(modeloPendientes);
+        tablaPendientes = Tablas.crear(modeloPendientes, "No hay lavados en curso");
+        Tablas.alinearDerecha(tablaPendientes, "Precio");
+        // El número interno (ID) no le sirve al cajero: lo escondo de la vista pero sigo teniéndolo en el modelo.
+        tablaPendientes.removeColumn(tablaPendientes.getColumnModel().getColumn(0));
         JScrollPane scrollTabla = new JScrollPane(tablaPendientes);
         scrollTabla.setBorder(BorderFactory.createEmptyBorder());
 
@@ -93,6 +100,11 @@ public class PanelLavado extends JPanel {
                 BorderLayout.CENTER);
     }
 
+    /** Dejo el cursor en la placa, listo para escribir o escanear (lo llamo al abrir esta pantalla). */
+    public void enfocar() {
+        SwingUtilities.invokeLater(campoPlaca::requestFocusInWindow);
+    }
+
     public void refrescar() {
         comboVehiculo.removeAllItems();
         comboVehiculo.addItem(new VehiculoItem(null, "Ninguno"));
@@ -102,11 +114,10 @@ public class PanelLavado extends JPanel {
 
         pendientes = lavadoService.obtenerPendientes();
         modeloPendientes.setRowCount(0);
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         for (RegistroLavado r : pendientes) {
             modeloPendientes.addRow(new Object[]{
-                    r.getId(), r.getPlaca(), r.getServicio().getNombre(), "$" + r.getPrecio(),
-                    r.getFechaInicio().format(fmt),
+                    r.getId(), r.getPlaca(), r.getServicio().getNombre(), Formato.dinero(r.getPrecio()),
+                    Formato.fechaHora(r.getFechaInicio()),
                     r.getNombreDueno() != null ? r.getNombreDueno() : "",
                     r.getTelefonoDueno() != null ? r.getTelefonoDueno() : ""
             });

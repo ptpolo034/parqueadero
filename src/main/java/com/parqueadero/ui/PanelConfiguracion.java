@@ -36,7 +36,7 @@ public class PanelConfiguracion extends JPanel {
         setLayout(new BorderLayout());
         setOpaque(false);
 
-        // --- Datos del negocio (aparecen en los tickets y recibos) ---
+        // --- Aquí armo los datos del negocio (aparecen en los tickets y recibos) ---
         campoAvisoLegal.setLineWrap(true);
         campoAvisoLegal.setWrapStyleWord(true);
         JButton botonGuardarNegocio = Estilos.primario(new JButton("Guardar datos del negocio"));
@@ -60,7 +60,7 @@ public class PanelConfiguracion extends JPanel {
         envoltorioNegocio.add(Tarjeta.conTitulo("Datos del negocio", "Aparecen en los tiquetes y recibos", formNegocio),
                 BorderLayout.NORTH);
 
-        // --- Logo ---
+        // --- Aquí armo el logo ---
         etiquetaLogo.setHorizontalAlignment(SwingConstants.CENTER);
         etiquetaLogo.setPreferredSize(new Dimension(150, 150));
         JButton botonCambiarLogo = new JButton("Cambiar logo...");
@@ -77,7 +77,7 @@ public class PanelConfiguracion extends JPanel {
         cuerpoLogo.add(etiquetaLogo, BorderLayout.CENTER);
         cuerpoLogo.add(botonesLogo, BorderLayout.SOUTH);
 
-        // --- Respaldos ---
+        // --- Aquí armo los respaldos ---
         JList<String> listaRespaldos = new JList<>(modeloRespaldos);
         listaRespaldos.setOpaque(false);
         listaRespaldos.setFixedCellHeight(30);
@@ -137,6 +137,10 @@ public class PanelConfiguracion extends JPanel {
         List<Path> respaldos = respaldoService.listarRespaldos();
         for (Path p : respaldos) {
             modeloRespaldos.addElement(p.getFileName().toString());
+        }
+        if (respaldos.isEmpty()) {
+            // Estado vacío: así se entiende que la lista está bien y que simplemente aún no hay copias.
+            modeloRespaldos.addElement("Todavía no hay copias de seguridad");
         }
     }
 

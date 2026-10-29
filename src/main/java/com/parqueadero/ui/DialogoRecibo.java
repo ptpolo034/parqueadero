@@ -13,6 +13,9 @@ public class DialogoRecibo extends JDialog {
         JTextArea area = new JTextArea(contenido);
         area.setEditable(false);
         area.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 13));
+        // El recibo es un papel: blanco con letra negra en cualquier tema, así también sale bien al imprimir.
+        area.setBackground(Color.WHITE);
+        area.setForeground(Color.BLACK);
         area.setMargin(new Insets(10, 10, 10, 10));
         add(new JScrollPane(area), BorderLayout.CENTER);
 
@@ -27,6 +30,9 @@ public class DialogoRecibo extends JDialog {
             }
         });
         botonCerrar.addActionListener(e -> dispose());
+        // Enter y Esc cierran: con el lector de códigos o el teclado el cajero sigue con el siguiente vehículo sin tocar el ratón.
+        getRootPane().setDefaultButton(botonCerrar);
+        Estilos.cerrarConEscape(this);
 
         JPanel botones = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         botones.add(botonImprimir);

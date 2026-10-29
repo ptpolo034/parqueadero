@@ -89,7 +89,7 @@ public class DialogoLogin extends JDialog {
         }
     }
 
-    /** Tras varios intentos fallidos seguidos se espera 30 segundos antes de dejar intentar de nuevo. */
+    /** Tras 5 intentos fallidos seguidos bloqueo el botón 30 segundos antes de dejar intentar de nuevo. */
     private void bloquearTemporalmente() {
         botonIngresar.setEnabled(false);
         botonIngresar.setText("Espera 30 s...");

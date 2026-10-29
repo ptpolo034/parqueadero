@@ -4,7 +4,7 @@ import javax.swing.ImageIcon;
 import java.awt.Image;
 import java.net.URL;
 
-/** Ícono por defecto del software, empaquetado dentro del .jar. El cliente puede reemplazarlo
+/** Aquí tengo el ícono por defecto del software, empaquetado dentro del .jar. El cliente puede reemplazarlo
  * subiendo su propio logo en Configuración (ver {@link RecursosApp}), que tiene prioridad. */
 public final class IconoApp {
     private static Image icono;

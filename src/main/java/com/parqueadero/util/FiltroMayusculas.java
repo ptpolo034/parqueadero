@@ -7,8 +7,8 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
 /**
- * Convierte a mayúsculas el texto de un campo mientras se escribe (por ejemplo, la placa),
- * en vez de dejar que el usuario la vea en minúscula hasta que se normalice al guardar.
+ * Esta clase me sirve para pasar a mayúsculas el texto de un campo mientras se escribe (por ejemplo, la placa),
+ * en vez de dejar que el usuario la vea en minúscula hasta que la normalice al guardar.
  */
 public final class FiltroMayusculas extends DocumentFilter {
     private static final FiltroMayusculas INSTANCIA = new FiltroMayusculas();

@@ -9,10 +9,10 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Pide usuario y contraseña de un administrador para autorizar una acción sensible
+ * Aquí pido usuario y contraseña de un administrador para autorizar una acción sensible
  * (editar, cancelar o eliminar algo) cuando quien está usando el sistema es un cajero.
  * Un administrador que ya tiene la sesión iniciada no necesita volver a autenticarse:
- * usa {@link #solicitarAutorizacion} en vez de construir el diálogo directamente.
+ * por eso uso {@link #solicitarAutorizacion} en vez de construir el diálogo directamente.
  */
 public class DialogoAutorizacionAdmin extends JDialog {
     private final AuthService authService;
@@ -23,8 +23,10 @@ public class DialogoAutorizacionAdmin extends JDialog {
     private String autorizadoPor = null;
 
     /**
+     * Pido la autorización de un administrador para la acción sensible indicada en {@code motivo}.
+     *
      * @return el nombre del administrador que autoriza la acción (el propio usuario activo si ya es admin),
-     * o {@code null} si se canceló o las credenciales no correspondían a un administrador.
+     * o {@code null} si cancelaron o las credenciales no eran de un administrador.
      */
     public static String solicitarAutorizacion(Window propietario, AuthService authService,
                                                Usuario usuarioActivo, String motivo) {
@@ -49,6 +51,7 @@ public class DialogoAutorizacionAdmin extends JDialog {
         JButton botonAutorizar = Estilos.primario(new JButton("Autorizar"));
         JButton botonCancelar = new JButton("Cancelar");
         getRootPane().setDefaultButton(botonAutorizar);
+        Estilos.cerrarConEscape(this);
         botonAutorizar.addActionListener(e -> intentar());
         botonCancelar.addActionListener(e -> dispose());
         JPanel botones = new JPanel(new GridLayout(1, 2, 10, 0));

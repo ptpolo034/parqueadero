@@ -60,7 +60,7 @@ public final class GeneradorRecibos {
         return sb.toString();
     }
 
-    /** Ticket que se entrega al cliente mientras el servicio está en curso (aún no hay cobro que mostrar). */
+    /** Armo el ticket que le entrego al cliente mientras el servicio está en curso (aún no hay cobro que mostrar). */
     public static String ticketPendiente(ConfiguracionNegocio negocio, int numeroTiquete, String placa, String detalle, String cajero) {
         StringBuilder sb = new StringBuilder();
         encabezado(sb, negocio, numeroTiquete);
@@ -75,7 +75,7 @@ public final class GeneradorRecibos {
         return sb.toString();
     }
 
-    /** Ticket de entrada (parqueo y/o lavado y/o mensualidad nueva); los tres últimos parámetros son opcionales. */
+    /** Armo el ticket de entrada (parqueo y/o lavado y/o mensualidad nueva); los tres últimos parámetros son opcionales. */
     public static String ticketEntrada(ConfiguracionNegocio negocio, String placa, Vehiculo vehiculo,
                                        RegistroLavado lavado, Mensualidad mensualidad) {
         int numero = vehiculo != null ? vehiculo.getId() : lavado != null ? lavado.getId()
@@ -108,7 +108,7 @@ public final class GeneradorRecibos {
         return sb.toString();
     }
 
-    /** Encabezado (nombre, NIT, dirección/teléfono, número de tiquete) reutilizable también en los tickets de entrada. */
+    /** Escribo el encabezado (nombre, NIT, dirección/teléfono, número de tiquete); también lo reutilizo en los tickets de entrada. */
     public static void encabezado(StringBuilder sb, ConfiguracionNegocio negocio, int numeroTiquete) {
         sb.append(negocio.getNombre()).append("\n");
         if (esValido(negocio.getNit())) {
@@ -141,7 +141,7 @@ public final class GeneradorRecibos {
         agregarFirma(sb);
     }
 
-    /** Línea de crédito del desarrollador del software, para tickets que no usan {@link #pie}. */
+    /** Agrego mi línea de crédito como desarrollador del software; la uso directo en los tickets que no pasan por {@link #pie}. */
     public static void agregarFirma(StringBuilder sb) {
         sb.append(LINEA).append("\n");
         sb.append(FIRMA_DESARROLLADOR).append("\n");

@@ -12,7 +12,7 @@ public final class ImpresionUtil {
     private ImpresionUtil() {
     }
 
-    /** Imprime el contenido visual de un componente Swing tal como se ve en pantalla. */
+    /** Imprimo el contenido visual de un componente Swing tal como se ve en pantalla. */
     public static void imprimirComponente(Component componente) throws PrinterException {
         PrinterJob job = PrinterJob.getPrinterJob();
         job.setPrintable((Graphics graphics, PageFormat pageFormat, int pageIndex) -> {

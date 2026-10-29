@@ -54,7 +54,7 @@ public class PanelUsuarios extends JPanel {
                 return false;
             }
         };
-        tablaUsuarios = Tablas.crear(modeloUsuarios);
+        tablaUsuarios = Tablas.crear(modeloUsuarios, "Aún no hay usuarios");
         JScrollPane scrollTabla = new JScrollPane(tablaUsuarios);
         scrollTabla.setBorder(BorderFactory.createEmptyBorder());
 
@@ -62,13 +62,20 @@ public class PanelUsuarios extends JPanel {
         JButton botonRenombrar = new JButton("Renombrar...");
         JButton botonRestablecer = new JButton("Nueva contraseña...");
         JButton botonEliminar = Estilos.peligro(new JButton("Eliminar"));
-        JPanel acciones = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        // Uso dos filas de botones: en una sola no caben en ventanas de 1120 de ancho y los últimos quedaban ocultos.
+        JPanel filaRol = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        filaRol.setOpaque(false);
+        filaRol.add(comboNuevoRol);
+        filaRol.add(botonCambiarRol);
+        filaRol.add(botonRenombrar);
+        JPanel filaCuenta = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 0));
+        filaCuenta.setOpaque(false);
+        filaCuenta.add(botonRestablecer);
+        filaCuenta.add(botonEliminar);
+        JPanel acciones = new JPanel(new GridLayout(2, 1, 0, 8));
         acciones.setOpaque(false);
-        acciones.add(comboNuevoRol);
-        acciones.add(botonCambiarRol);
-        acciones.add(botonRenombrar);
-        acciones.add(botonRestablecer);
-        acciones.add(botonEliminar);
+        acciones.add(filaRol);
+        acciones.add(filaCuenta);
 
         botonCambiarRol.addActionListener(e -> cambiarRol());
         botonRenombrar.addActionListener(e -> renombrar());

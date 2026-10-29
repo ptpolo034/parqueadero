@@ -7,13 +7,13 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Pide el código de activación. Si {@code bloqueante} es true (la prueba de 30 días ya
- * venció), no deja continuar sin activar o salir de la aplicación; si es false, es solo
- * un recordatorio que se puede cerrar sin activar (se usa antes de que venza la prueba).
+ * Aquí pido el código de activación. Si {@code bloqueante} es true (la prueba de 30 días ya
+ * venció), no dejo continuar: solo se puede activar o salir de la aplicación; si es false, es solo
+ * un recordatorio que se puede cerrar sin activar (lo uso antes de que venza la prueba).
  */
 public class DialogoActivacion extends JDialog {
     private final LicenciaService licenciaService;
-    private final JTextField campoClave = new JTextField(20);
+    private final CampoClaveActivacion campoClave = new CampoClaveActivacion(this::activar);
     private boolean activada;
 
     public DialogoActivacion(Window propietario, LicenciaService licenciaService, boolean bloqueante) {
@@ -30,7 +30,6 @@ public class DialogoActivacion extends JDialog {
         JTextField campoId = new JTextField(licenciaService.idInstalacion());
         campoId.setEditable(false);
         campoId.putClientProperty(FlatClientProperties.STYLE, "font:bold +2");
-        campoClave.putClientProperty(FlatClientProperties.PLACEHOLDER_TEXT, "XXXX-XXXX-XXXX-XXXX");
 
         JButton botonActivar = Estilos.primarioGrande(new JButton("Activar"));
         JButton botonSalir = new JButton(bloqueante ? "Salir" : "Cerrar");
@@ -78,7 +77,7 @@ public class DialogoActivacion extends JDialog {
 
     private void activar() {
         try {
-            licenciaService.activar(campoClave.getText());
+            licenciaService.activar(campoClave.getTexto());
             activada = true;
             JOptionPane.showMessageDialog(this, "¡Software activado correctamente! Gracias por tu compra.");
             dispose();

@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Se muestra solo la primera vez que se ejecuta la aplicación (cuando aún no
+ * Lo muestro solo la primera vez que se ejecuta la aplicación (cuando aún no
  * existe ningún usuario registrado), para crear la cuenta de administrador.
  */
 public class DialogoRegistroInicial extends JDialog {

@@ -56,7 +56,7 @@ public class CajaService {
                 .sum();
     }
 
-    /** Cuánto debería haber en caja hoy, antes de contar físicamente el dinero. */
+    /** Aquí guardo cuánto debería haber en caja hoy, antes de contar el dinero físicamente. */
     public record ResumenCaja(int ingresosParqueo, int ingresosLavado, int ingresosMensualidades,
                                int ingresosManuales, int egresosManuales, int baseInicial, int totalEsperado) {
     }

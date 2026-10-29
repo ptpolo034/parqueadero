@@ -8,7 +8,7 @@
 $ErrorActionPreference = "Stop"
 
 # Sube este numero cada vez que generes una version nueva para distribuir.
-$version = "1.0.0"
+$version = "1.1.0"
 
 # NO CAMBIAR NUNCA este identificador: es lo que le permite a Windows detectar que un
 # instalador nuevo es una ACTUALIZACION del mismo programa (reemplaza en el mismo lugar,

@@ -59,7 +59,7 @@ public class RegistroLavado {
         return id;
     }
 
-    /** Solo se usa justo después de insertar, para completar el id autogenerado por la base de datos. */
+    /** Solo lo uso justo después de insertar, para completar el id que genera la base de datos. */
     public void setId(int id) {
         this.id = id;
     }

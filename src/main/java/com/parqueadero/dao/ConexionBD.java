@@ -24,7 +24,7 @@ public class ConexionBD {
         Connection conexion = DriverManager.getConnection(URL);
         try (Statement stmt = conexion.createStatement()) {
             stmt.execute("PRAGMA foreign_keys = ON");
-            // Si otra operación tiene la base ocupada, se espera un momento en vez de fallar de inmediato.
+            // Si otra operación tiene la base ocupada, espero un momento en vez de fallar de inmediato.
             stmt.execute("PRAGMA busy_timeout = 5000");
             stmt.execute("PRAGMA synchronous = NORMAL");
         }
@@ -179,7 +179,7 @@ public class ConexionBD {
             stmt.execute(sqlPagosMensualidad);
 
 
-            // Migración: mensualidades (versiones anteriores no tenían la columna en vehiculos).
+            // Migración de las mensualidades: las versiones anteriores no tenían estas columnas en vehiculos ni en cierres_caja.
             if (!tieneColumna(stmt, "vehiculos", "es_mensual")) {
                 stmt.execute("ALTER TABLE vehiculos ADD COLUMN es_mensual INTEGER NOT NULL DEFAULT 0");
             }
@@ -187,18 +187,18 @@ public class ConexionBD {
                 stmt.execute("ALTER TABLE cierres_caja ADD COLUMN ingresos_mensualidades INTEGER NOT NULL DEFAULT 0");
             }
 
-            // Migración: si la tabla usuarios ya existía de una versión anterior sin la columna "rol", se agrega.
+            // Migración: si la tabla usuarios ya existía de una versión anterior sin la columna "rol", la agrego.
             if (!tieneColumna(stmt, "usuarios", "rol")) {
                 stmt.execute("ALTER TABLE usuarios ADD COLUMN rol TEXT NOT NULL DEFAULT 'CAJERO'");
             }
-            // Migración: datos del dueño del vehículo en los lavados (versiones anteriores no la tenían).
+            // Migración: datos del dueño del vehículo en los lavados (las versiones anteriores no los tenían).
             if (!tieneColumna(stmt, "lavados", "nombre_dueno")) {
                 stmt.execute("ALTER TABLE lavados ADD COLUMN nombre_dueno TEXT");
             }
             if (!tieneColumna(stmt, "lavados", "telefono_dueno")) {
                 stmt.execute("ALTER TABLE lavados ADD COLUMN telefono_dueno TEXT");
             }
-            // Migración: quién atendió cada operación y el pago recibido (para el formato de tiquete completo).
+            // Migración: guardo quién atendió cada operación y el pago recibido (para el formato de tiquete completo).
             if (!tieneColumna(stmt, "vehiculos", "usuario_entrada")) {
                 stmt.execute("ALTER TABLE vehiculos ADD COLUMN usuario_entrada TEXT");
             }
@@ -223,17 +223,17 @@ public class ConexionBD {
             if (!tieneColumna(stmt, "lavados", "vuelto")) {
                 stmt.execute("ALTER TABLE lavados ADD COLUMN vuelto INTEGER");
             }
-            // Migración: régimen tributario / nota fiscal para los tiquetes (versiones anteriores no la tenían).
+            // Migración: régimen tributario / nota fiscal para los tiquetes (las versiones anteriores no lo tenían).
             if (!tieneColumna(stmt, "configuracion_negocio", "regimen_tributario")) {
                 stmt.execute("ALTER TABLE configuracion_negocio ADD COLUMN regimen_tributario TEXT");
             }
-            // Migración: cupos totales de parqueo configurables (antes era un valor fijo en el código).
+            // Migración: ahora dejo configurables los cupos totales de parqueo (antes eran un valor fijo en el código).
             if (!tieneColumna(stmt, "configuracion_negocio", "cupos_totales")) {
                 stmt.execute("ALTER TABLE configuracion_negocio ADD COLUMN cupos_totales INTEGER NOT NULL DEFAULT 20");
             }
             stmt.execute(sqlAuditoria);
 
-            // Reglas de cobro configurables: tope por día, minutos de gracia y fracción de cobro.
+            // Dejo configurables las reglas de cobro: tope por día, minutos de gracia y fracción de cobro.
             if (!tieneColumna(stmt, "tarifas_parqueo", "precio_dia")) {
                 stmt.execute("ALTER TABLE tarifas_parqueo ADD COLUMN precio_dia INTEGER NOT NULL DEFAULT 0");
             }
@@ -244,9 +244,9 @@ public class ConexionBD {
                 stmt.execute("ALTER TABLE configuracion_negocio ADD COLUMN minutos_fraccion INTEGER NOT NULL DEFAULT 60");
             }
 
-            // WAL: más resistente a cortes de luz y permite leer mientras se escribe (el modo se guarda en el archivo).
+            // Uso WAL porque resiste mejor los cortes de luz y deja leer mientras se escribe (el modo queda guardado en el archivo).
             stmt.execute("PRAGMA journal_mode = WAL");
-            // Índices para que las búsquedas por placa/estado/fecha sigan siendo rápidas con años de historia.
+            // Creo índices para que las búsquedas por placa/estado/fecha sigan siendo rápidas con años de historia.
             stmt.execute("CREATE INDEX IF NOT EXISTS idx_vehiculos_placa_estado ON vehiculos(placa, estado)");
             stmt.execute("CREATE INDEX IF NOT EXISTS idx_vehiculos_estado_salida ON vehiculos(estado, hora_salida)");
             stmt.execute("CREATE INDEX IF NOT EXISTS idx_lavados_estado_placa ON lavados(estado, placa)");
@@ -256,7 +256,7 @@ public class ConexionBD {
             stmt.execute("CREATE INDEX IF NOT EXISTS idx_movimientos_caja_fecha ON movimientos_caja(fecha)");
             stmt.execute("CREATE INDEX IF NOT EXISTS idx_auditoria_fecha ON auditoria(fecha_hora)");
 
-            // Si ningún usuario tiene rol ADMIN (por ejemplo, tras la migración anterior), se asciende
+            // Si ningún usuario tiene rol ADMIN (por ejemplo, tras la migración anterior), ascendo
             // al usuario más antiguo para que la cuenta original siga teniendo control total.
             stmt.execute("""
                     UPDATE usuarios SET rol = 'ADMIN'
@@ -318,7 +318,7 @@ public class ConexionBD {
     }
 
     private static String generarIdInstalacion() {
-        String alfabeto = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sin 0/O ni 1/I, para evitar confusiones al dictarlo
+        String alfabeto = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // sin 0/O ni 1/I, para que no se confundan al dictarlo
         SecureRandom random = new SecureRandom();
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 10; i++) {

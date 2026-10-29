@@ -18,12 +18,12 @@ public class MensualidadService {
         this.usuarioActual = usuarioActual;
     }
 
-    /** Mensualidad en estado ACTIVA para esa placa aunque ya haya vencido por fecha, o {@code null} si no tiene. */
+    /** Devuelvo la mensualidad en estado ACTIVA de esa placa aunque ya haya vencido por fecha, o {@code null} si no tiene. */
     public Mensualidad obtenerActivaPorPlaca(String placa) {
         return mensualidadDAO.obtenerActivaPorPlaca(placa.trim().toUpperCase());
     }
 
-    /** Mensualidad vigente hoy para esa placa, o {@code null} si no tiene o ya venció. */
+    /** Devuelvo la mensualidad vigente hoy de esa placa, o {@code null} si no tiene o ya venció. */
     public Mensualidad obtenerVigentePorPlaca(String placa) {
         Mensualidad mensualidad = mensualidadDAO.obtenerActivaPorPlaca(placa.trim().toUpperCase());
         return (mensualidad != null && mensualidad.estaVigente(LocalDate.now())) ? mensualidad : null;
@@ -59,7 +59,7 @@ public class MensualidadService {
         return mensualidadDAO.obtenerTodas();
     }
 
-    /** Extiende el vencimiento (desde hoy si ya venció, o desde el vencimiento actual si sigue vigente) y cobra. */
+    /** Extiendo el vencimiento (desde hoy si ya venció, o desde el vencimiento actual si sigue vigente) y cobro. */
     public Mensualidad renovar(int mensualidadId, int meses, int montoPagado) {
         if (meses <= 0) {
             throw new IllegalArgumentException("La cantidad de meses debe ser mayor a cero");
@@ -76,7 +76,7 @@ public class MensualidadService {
         return mensualidad;
     }
 
-    /** Cancela una mensualidad; queda en la auditoría con quién la autorizó. */
+    /** Dejo la mensualidad como cancelada, no la borro; en la auditoría queda quién la autorizó. */
     public void cancelar(int mensualidadId, String autorizadoPor) {
         Mensualidad m = obtenerPorId(mensualidadId);
         mensualidadDAO.cancelar(mensualidadId, usuarioActual, autorizadoPor,
