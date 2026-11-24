@@ -52,3 +52,10 @@ src/main/java/com/parqueadero/
   util/                      tickets, códigos QR, contraseñas, licencias
 src/test/                    pruebas automáticas (cobro, flujo completo con base temporal, contraseñas)
 ```
+
+## Derechos
+
+Publico este código para mostrar mi trabajo. Todos los derechos están reservados: no es software libre y las licencias de activación se venden aparte.
+
+---
+Desarrollado por Henry Polo.
